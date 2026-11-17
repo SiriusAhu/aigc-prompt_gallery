@@ -107,7 +107,11 @@ async function main() {
     console.error(`\n数据校验失败：${errors.length} 处错误`);
     process.exit(1);
   }
-  console.log(`  ✓ 数据校验通过：${PROMPTS.length} 条模板`);
+  const withMedia = PROMPTS.filter((p) => p.media?.video).length;
+  console.log(
+    `  ✓ 数据校验通过：${PROMPTS.length} 条模板` +
+      (withMedia ? `，其中 ${withMedia} 条带视频` : "（暂无可预览视频，卡片走文字版式）"),
+  );
 }
 
 main().catch((e) => {

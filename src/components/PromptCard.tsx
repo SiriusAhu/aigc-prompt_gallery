@@ -28,6 +28,8 @@ export function PromptCard({ item, index }: Props) {
     }
   };
 
+  const hasMedia = Boolean(item.media?.cover || item.media?.video);
+
   return (
     <Link
       href={`/p/${item.id}`}
@@ -36,18 +38,28 @@ export function PromptCard({ item, index }: Props) {
                  hover:bg-ink-900 hover:shadow-[0_18px_50px_-18px_rgba(0,0,0,0.9)]"
       style={{ animationDelay: `${Math.min(index, 14) * 35}ms` }}
     >
-      <div className="relative">
-        <HoverVideo item={item} />
+      {hasMedia ? (
+        <div className="relative">
+          <HoverVideo item={item} />
 
-        <span
-          className="pointer-events-none absolute left-2.5 top-2.5 inline-flex items-center gap-1 rounded-full
-                     bg-ink-950/80 px-2 py-1 text-[10px] font-medium shadow-[0_1px_8px_rgba(0,0,0,0.55)] backdrop-blur-sm"
-          style={{ color: meta.tint }}
-        >
-          <span className="leading-none">{meta.icon}</span>
-          {meta.label}
-        </span>
-      </div>
+          <span
+            className="pointer-events-none absolute left-2.5 top-2.5 inline-flex items-center gap-1 rounded-full
+                       bg-ink-950/80 px-2 py-1 text-[10px] font-medium shadow-[0_1px_8px_rgba(0,0,0,0.55)] backdrop-blur-sm"
+            style={{ color: meta.tint }}
+          >
+            <span className="leading-none">{meta.icon}</span>
+            {meta.label}
+          </span>
+        </div>
+      ) : (
+        // 无媒体时不占 16:9 版位，只留一条分类色带，避免大片空框
+        <div
+          className="h-1 w-full"
+          style={{
+            background: `linear-gradient(90deg, ${meta.tint}, ${meta.tint}22 70%, transparent)`,
+          }}
+        />
+      )}
 
       <div className="flex flex-1 flex-col gap-3 p-4">
         <header className="space-y-1.5">
@@ -77,8 +89,15 @@ export function PromptCard({ item, index }: Props) {
             </button>
           </div>
 
-          <p className="font-mono text-[10.5px] tracking-wide text-mist-500">
-            {item.models.join(" · ")}
+          <p className="flex flex-wrap items-center gap-1.5 font-mono text-[10.5px] tracking-wide text-mist-500">
+            {!hasMedia && (
+              <span className="inline-flex items-center gap-1" style={{ color: meta.tint }}>
+                {meta.icon}
+                {meta.label}
+              </span>
+            )}
+            {!hasMedia && <span className="text-white/15">·</span>}
+            <span>{item.models.join(" · ")}</span>
           </p>
         </header>
 

@@ -3,9 +3,10 @@ import type { PromptItem } from "./types";
 /**
  * 提示词库。新增条目直接往这里加，id 保持唯一。
  *
- * media.video / media.cover 的路径相对于仓库根的 assets/ 目录：
- *   media: { cover: "covers/demo.png", video: "videos/demo.mp4" }
- * 也可以填 https 外链。只填 cover 就只显示静图，不填就走色块兜底。
+ * media 是可选的，路径相对于素材库根目录（默认 AI_Video/assets）：
+ *   media: { cover: "covers/<文件名>.png", video: "videos/<文件名>.mp4" }
+ * 也可以填 https 外链。只填 cover 就只显示静图，整个省略就走分类色块兜底。
+ * 没有 media.video 的条目不会出现悬停播放，卡片退化为纯文字版式。
  */
 export const PROMPTS: PromptItem[] = [
   {
@@ -24,7 +25,6 @@ export const PROMPTS: PromptItem[] = [
     notes:
       "「orbital + push-in」写在一起模型容易只取其一。改成先描述轨迹（arc 30°→right）、再描述终点景别（tight 3/4 close-up）最稳。5 秒内不要超过 90° 的弧线。",
     added: "2026-11-17",
-    media: { cover: "covers/demo.png", video: "videos/demo.mp4" },
   },
   {
     id: "camera-dolly-zoom",

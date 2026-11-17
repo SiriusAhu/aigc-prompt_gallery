@@ -4,6 +4,7 @@ import { PROMPTS } from "@/data/prompts";
 import { PromptCard } from "@/components/PromptCard";
 
 const FEATURED = PROMPTS.filter((p) => p.category === "camera" || p.category === "light").slice(0, 4);
+const withVideo = PROMPTS.filter((p) => p.media?.video).length;
 
 export default function HomePage() {
   return (
@@ -83,7 +84,7 @@ export default function HomePage() {
             精选模板
           </h2>
           <span className="font-mono text-[10.5px] text-mist-500">
-            {PROMPTS.filter((p) => p.media?.video).length} 条带视频
+            {withVideo > 0 ? `${withVideo} 条带视频` : `${PROMPTS.length} 条模板`}
           </span>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

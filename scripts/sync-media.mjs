@@ -17,12 +17,18 @@ const ASSETS_DIR = path.resolve(
 const PUBLIC_MEDIA = path.resolve(ROOT, "public/media");
 const DATA_FILE = path.resolve(ROOT, "src/data/prompts.ts");
 
-const MEDIA_RE = /"([^"\n]+\.(?:mp4|webm|mov|png|jpe?g|webp|avif|gif))"/gi;
+const MEDIA_RE = /"([^"<>\n]+\.(?:mp4|webm|mov|png|jpe?g|webp|avif|gif))"/gi;
+
+/** 去掉注释，避免把文档示例（covers/<文件名>.png 之类）误当成真实引用 */
+function stripComments(source) {
+  return source.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/[^\n]*/g, "");
+}
 
 function collectRefs() {
   if (!fs.existsSync(DATA_FILE)) return [];
+  const source = stripComments(fs.readFileSync(DATA_FILE, "utf8"));
   const refs = new Set();
-  for (const m of fs.readFileSync(DATA_FILE, "utf8").matchAll(MEDIA_RE)) refs.add(m[1]);
+  for (const m of source.matchAll(MEDIA_RE)) refs.add(m[1]);
   return [...refs].filter((r) => !/^https?:\/\//i.test(r));
 }
 
