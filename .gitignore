@@ -1,11 +1,16 @@
 node_modules/
-dist/
-*.local
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
 
 # 临时调试产物
 .shots/
 .chrome-tmp/
 frames/
+
+# 从素材库同步来的媒体，不进 git（源在 AI_Video/assets 或仓内 assets/）
+public/media/
 
 # 编辑器与系统
 .vscode/*
@@ -18,10 +23,3 @@ Thumbs.db
 *.log
 npm-debug.log*
 pnpm-debug.log*
-
-# 素材：视频文件默认不入库（GitHub 单文件 100MB 上限）。
-# 发布用的封面请放在 assets/covers/ 并确保被 .gitignore 放行。
-assets/raw/
-assets/**/*.mp4
-assets/**/*.mov
-!assets/**/demo.mp4

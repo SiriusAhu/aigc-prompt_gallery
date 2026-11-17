@@ -1,59 +1,43 @@
-import { useCallback, useState } from "react";
-import type { KeyboardEvent } from "react";
-import { CATEGORY_MAP } from "../data/categories";
-import type { PromptItem } from "../data/types";
-import { copyText } from "../lib/asset";
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
+import { CATEGORY_MAP } from "@/data/categories";
+import type { PromptItem } from "@/data/types";
+import { copyText } from "@/lib/asset";
 import { HoverVideo } from "./HoverVideo";
 
 interface Props {
   item: PromptItem;
   index: number;
-  onOpen: (item: PromptItem) => void;
 }
 
-export function PromptCard({ item, index, onOpen }: Props) {
+export function PromptCard({ item, index }: Props) {
   const meta = CATEGORY_MAP[item.category];
   const [copied, setCopied] = useState(false);
 
-  const copy = useCallback(
-    async (e?: { stopPropagation: () => void }) => {
-      e?.stopPropagation();
-      const body = [item.prompt, item.negative && `\n\nNegative: ${item.negative}`]
-        .filter(Boolean)
-        .join("");
-      if (await copyText(body)) {
-        setCopied(true);
-        window.setTimeout(() => setCopied(false), 1600);
-      }
-    },
-    [item.prompt, item.negative],
-  );
-
-  const onKeyDown = (e: KeyboardEvent<HTMLElement>) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      onOpen(item);
-    } else if (e.key.toLowerCase() === "c" && !e.metaKey && !e.ctrlKey) {
-      e.preventDefault();
-      void copy();
+  const copy = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const body = [item.prompt, item.negative && `\n\nNegative: ${item.negative}`]
+      .filter(Boolean)
+      .join("");
+    if (await copyText(body)) {
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1600);
     }
   };
 
   return (
-    <article
-      role="button"
-      tabIndex={0}
-      aria-label={`${item.title}，${meta.label}，按回车查看详情`}
-      onClick={() => onOpen(item)}
-      onKeyDown={onKeyDown}
-      className="pv-fade-up group relative flex flex-col overflow-hidden rounded-2xl border border-white/[0.07] bg-ink-900/60
-                 transition-all duration-300 hover:-translate-y-1 hover:border-white/15
-                 hover:bg-ink-900 hover:shadow-[0_18px_50px_-18px_rgba(0,0,0,0.9)]
-                 focus-visible:border-accent/50"
+    <Link
+      href={`/p/${item.id}`}
+      className="pv-fade-up group flex flex-col overflow-hidden rounded-2xl border border-white/[0.07]
+                 bg-ink-900/60 transition-all duration-300 hover:-translate-y-1 hover:border-white/15
+                 hover:bg-ink-900 hover:shadow-[0_18px_50px_-18px_rgba(0,0,0,0.9)]"
       style={{ animationDelay: `${Math.min(index, 14) * 35}ms` }}
     >
       <div className="relative">
-        <HoverVideo key={item.id} item={item} />
+        <HoverVideo item={item} />
 
         <span
           className="pointer-events-none absolute left-2.5 top-2.5 inline-flex items-center gap-1 rounded-full
@@ -75,7 +59,7 @@ export function PromptCard({ item, index, onOpen }: Props) {
               type="button"
               onClick={copy}
               aria-label="复制提示词"
-              title="复制提示词 (C)"
+              title="复制提示词"
               className="mt-0.5 shrink-0 rounded-lg border border-white/10 p-1.5 text-mist-500
                          opacity-0 transition-all hover:border-accent/40 hover:text-accent
                          focus-visible:opacity-100 group-hover:opacity-100"
@@ -98,9 +82,7 @@ export function PromptCard({ item, index, onOpen }: Props) {
           </p>
         </header>
 
-        <p className="line-clamp-3 text-[12.5px] leading-relaxed text-mist-300/90">
-          {item.prompt}
-        </p>
+        <p className="line-clamp-3 text-[12.5px] leading-relaxed text-mist-300/90">{item.prompt}</p>
 
         <div className="mt-auto flex flex-wrap items-center gap-1.5 pt-1">
           {item.tags?.slice(0, 3).map((tag) => (
@@ -121,6 +103,6 @@ export function PromptCard({ item, index, onOpen }: Props) {
           )}
         </div>
       </div>
-    </article>
+    </Link>
   );
 }

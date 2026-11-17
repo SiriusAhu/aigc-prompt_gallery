@@ -1,11 +1,12 @@
+"use client";
+
 import { useCallback, useEffect, useRef, useState } from "react";
-import { assetUrl } from "../lib/asset";
-import { CATEGORY_MAP } from "../data/categories";
-import type { PromptItem } from "../data/types";
+import { assetUrl } from "@/lib/asset";
+import { CATEGORY_MAP } from "@/data/categories";
+import type { PromptItem } from "@/data/types";
 
 interface Props {
   item: PromptItem;
-  /** 是否显示右上角的「悬停预览」角标 */
   showHint?: boolean;
 }
 
@@ -45,12 +46,10 @@ export function HoverVideo({ item, showHint = true }: Props) {
     setPhase("loading");
     el.load();
     void el.play().catch(() => {
-      // 自动播放被拒（省电模式等）不是素材问题，静默回退，不标记损坏
       window.clearTimeout(timer.current);
       setPhase("cover");
     });
 
-    // 2.5s 内没有出画，判定素材不可用，退回封面
     window.clearTimeout(timer.current);
     timer.current = window.setTimeout(() => {
       const v = videoRef.current;
@@ -73,14 +72,13 @@ export function HoverVideo({ item, showHint = true }: Props) {
 
   return (
     <div
-      className="group/media relative aspect-video w-full cursor-pointer overflow-hidden bg-ink-900"
+      className="relative aspect-video w-full overflow-hidden bg-ink-900"
       onMouseEnter={start}
       onMouseLeave={stop}
       onFocus={start}
       onBlur={stop}
       data-phase={phase}
     >
-      {/* 兜底：无封面时用分类色块，不用灰框 */}
       {(!cover || coverBroken) && (
         <div
           className="absolute inset-0 grid place-items-center"
@@ -99,6 +97,7 @@ export function HoverVideo({ item, showHint = true }: Props) {
       )}
 
       {cover && !coverBroken && (
+        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={cover}
           alt=""
@@ -108,7 +107,7 @@ export function HoverVideo({ item, showHint = true }: Props) {
           className={`absolute inset-0 h-full w-full object-cover transition-all duration-500 ${
             phase === "playing"
               ? "scale-105 opacity-0"
-              : "scale-100 opacity-100 group-hover/media:scale-[1.03]"
+              : "scale-100 opacity-100 group-hover:scale-[1.03]"
           }`}
         />
       )}

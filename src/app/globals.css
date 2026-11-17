@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", "Cascadia Code", ui-monospace, monospace;
+  --font-sans: var(--font-inter), "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), "Cascadia Code", ui-monospace, monospace;
   --color-ink-950: #080b14;
   --color-ink-900: #0c111d;
   --color-ink-800: #121a2b;
@@ -77,7 +77,6 @@
   }
 }
 
-/* 淡入动画 */
 @keyframes pv-fade-up {
   from {
     opacity: 0;

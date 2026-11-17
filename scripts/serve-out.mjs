@@ -1,8 +1,6 @@
 /**
- * 最小静态服务器，用来验证 dist 产物（支持 Range）。
- * 单独写一个是因为 vite preview 在自定义 base 下会错误地把 .js 回退成 index.html。
- *
- * 用法：node scripts/serve-dist.mjs [端口] [base]
+ * 最小静态服务器，验证 out/ 产物（支持 Range 与目录 index 回退）。
+ * 用法：node scripts/serve-out.mjs [端口] [base]
  */
 import http from "node:http";
 import fs from "node:fs";
@@ -11,7 +9,7 @@ import { fileURLToPath } from "node:url";
 
 const port = Number(process.argv[2] ?? 5190);
 const base = `/${(process.argv[3] ?? "").replace(/^\/+|\/+$/g, "")}/`.replace("//", "/");
-const DIST = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "dist");
+const OUT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "out");
 
 const MIME = {
   ".html": "text/html; charset=utf-8",
@@ -25,7 +23,9 @@ const MIME = {
   ".avif": "image/avif",
   ".mp4": "video/mp4",
   ".webm": "video/webm",
+  ".woff2": "font/woff2",
   ".json": "application/json",
+  ".txt": "text/plain; charset=utf-8",
 };
 
 http
@@ -38,9 +38,17 @@ http
     let rel = urlPath.slice(base.length);
     if (rel === "" || rel.endsWith("/")) rel += "index.html";
 
-    const file = path.resolve(DIST, rel);
-    if (!file.startsWith(DIST + path.sep) || !fs.existsSync(file) || !fs.statSync(file).isFile()) {
-      res.writeHead(404).end("not found");
+    let file = path.resolve(OUT, rel);
+    if (!file.startsWith(OUT + path.sep)) {
+      res.writeHead(403).end("forbidden");
+      return;
+    }
+    if (!fs.existsSync(file) && fs.existsSync(`${file}.html`)) file = `${file}.html`;
+    if (!fs.existsSync(file) || !fs.statSync(file).isFile()) {
+      const nf = path.join(OUT, "404.html");
+      res.writeHead(404, { "Content-Type": "text/html; charset=utf-8" });
+      if (fs.existsSync(nf)) fs.createReadStream(nf).pipe(res);
+      else res.end("not found");
       return;
     }
 
@@ -49,8 +57,7 @@ http
     res.setHeader("Content-Type", type);
     res.setHeader("Accept-Ranges", "bytes");
 
-    const range = req.headers.range;
-    const m = range ? /^bytes=(\d*)-(\d*)$/.exec(range.trim()) : null;
+    const m = req.headers.range ? /^bytes=(\d*)-(\d*)$/.exec(req.headers.range.trim()) : null;
     if (m) {
       const start = m[1] ? Number(m[1]) : 0;
       const end = m[2] ? Math.min(Number(m[2]), stat.size - 1) : stat.size - 1;
@@ -66,5 +73,5 @@ http
     fs.createReadStream(file).pipe(res);
   })
   .listen(port, "127.0.0.1", () => {
-    console.log(`dist served at http://127.0.0.1:${port}${base}`);
+    console.log(`out/ served at http://127.0.0.1:${port}${base}`);
   });
