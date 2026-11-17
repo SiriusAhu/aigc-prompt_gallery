@@ -57,7 +57,7 @@ export function PromptCard({ item, index, onOpen }: Props) {
 
         <span
           className="pointer-events-none absolute left-2.5 top-2.5 inline-flex items-center gap-1 rounded-full
-                     bg-ink-950/75 px-2 py-1 text-[10px] font-medium backdrop-blur-sm"
+                     bg-ink-950/80 px-2 py-1 text-[10px] font-medium shadow-[0_1px_8px_rgba(0,0,0,0.55)] backdrop-blur-sm"
           style={{ color: meta.tint }}
         >
           <span className="leading-none">{meta.icon}</span>

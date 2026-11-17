@@ -86,8 +86,8 @@ function DialogBody({ item, onClose }: { item: PromptItem; onClose: () => void }
 
   return (
     <div
-      className="pv-fade-up my-auto w-full max-w-5xl overflow-hidden rounded-2xl border border-white/10
-                 bg-ink-900 shadow-[0_40px_120px_-30px_rgba(0,0,0,1)] outline-none"
+      className="pv-fade-up mt-5 mb-5 w-full max-w-5xl overflow-hidden rounded-2xl border border-white/10
+                 bg-ink-900 shadow-[0_40px_120px_-30px_rgba(0,0,0,1)] outline-none sm:mt-8"
     >
       {/* 顶部媒体区 */}
       <div className="relative aspect-video w-full bg-ink-950">
@@ -181,7 +181,7 @@ function DialogBody({ item, onClose }: { item: PromptItem; onClose: () => void }
             <h4 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-mist-500">
               参数
             </h4>
-            <dl className="grid grid-cols-2 gap-2 text-[12px]">
+            <dl className="grid grid-cols-3 gap-2 text-[12px]">
               {item.params?.aspect && (
                 <div className="rounded-lg bg-white/[0.04] px-2.5 py-2">
                   <dt className="text-[10px] text-mist-500">画幅</dt>
@@ -275,7 +275,7 @@ export function DetailModal({ item, onClose }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-ink-950/80 p-3 backdrop-blur-sm sm:p-6"
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-ink-950/80 px-3 py-5 backdrop-blur-sm sm:px-6 sm:py-8"
       onClick={onClose}
       role="presentation"
     >
