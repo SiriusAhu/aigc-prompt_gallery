@@ -1,7 +1,7 @@
 import { KIND_META } from "@/data/categories";
 import type { PromptKind } from "@/data/types";
 import { byKind } from "@/lib/prompts";
-import { PromptCard } from "./PromptCard";
+import { PromptList } from "./PromptList";
 
 function EmptyState({ kind }: { kind: PromptKind }) {
   return (
@@ -22,7 +22,7 @@ function EmptyState({ kind }: { kind: PromptKind }) {
       </div>
       <h2 className="mt-5 text-[15px] font-semibold tracking-[-0.01em]">还没有收录</h2>
       <p className="mx-auto mt-2 max-w-[42ch] text-[12.5px] leading-relaxed text-muted">
-        这个页面暂时是空的。版式已经定稿，等待内容填充。
+        这个页面暂时是空的，往数据文件里加条目即可出现。
       </p>
       <p className="mt-4 font-mono text-[11px] text-muted/70">
         src/data/prompts.ts · kind: &quot;{kind}&quot;
@@ -38,7 +38,7 @@ export function PromptPage({ kind }: { kind: PromptKind }) {
 
   return (
     <div className="mx-auto w-full max-w-[1120px] px-5">
-      <header className="pb-10 pt-16 sm:pb-12 sm:pt-20">
+      <header className="pb-8 pt-16 sm:pb-10 sm:pt-20">
         <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-muted">
           {kind === "image" ? "Image" : "Video"} Prompts
         </p>
@@ -53,27 +53,7 @@ export function PromptPage({ kind }: { kind: PromptKind }) {
         </p>
       </header>
 
-      {items.length > 0 ? (
-        <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((p) => (
-            <PromptCard
-              key={p.id}
-              ratio={ratio}
-              href={`/p/${p.id}`}
-              item={{
-                id: p.id,
-                title: p.title,
-                prompt: p.prompt,
-                tag: p.tags?.[0],
-                cover: p.media?.cover,
-                hasVideo: kind === "video" && Boolean(p.media?.video),
-              }}
-            />
-          ))}
-        </div>
-      ) : (
-        <EmptyState kind={kind} />
-      )}
+      {items.length > 0 ? <PromptList items={items} ratio={ratio} /> : <EmptyState kind={kind} />}
     </div>
   );
 }

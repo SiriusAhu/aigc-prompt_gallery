@@ -1,6 +1,5 @@
 /**
- * 数据自检。id 重复、kind/category 写错、媒体路径不存在，都会在 dev/build 前报错。
- * 内容允许为空（当前处于结构定稿阶段），空数组只提示、不失败。
+ * 数据自检。id 重复、kind 写错、tags 缺失、媒体路径不存在，都会在 dev/build 前报错。
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -14,10 +13,6 @@ const ASSETS_DIR = path.resolve(
 );
 
 const VALID_KINDS = ["image", "video"];
-const CATEGORIES = {
-  image: ["portrait", "scene", "product", "illustration", "architecture", "style"],
-  video: ["camera", "light", "material", "structure", "style", "negative", "workflow"],
-};
 const VALID_ASPECTS = ["1:1", "4:3", "16:9", "9:16", "3:2", "21:9"];
 const MEDIA_EXT = /\.(mp4|webm|mov|png|jpe?g|webp|avif|gif)$/i;
 
@@ -81,13 +76,14 @@ async function main() {
 
     if (!VALID_KINDS.includes(item.kind)) {
       errors.push(`${at} kind 必须是 image 或 video，当前：${item.kind}`);
-    } else if (!CATEGORIES[item.kind].includes(item.category)) {
-      errors.push(
-        `${at} category 非法：${item.category}（${item.kind} 可选 ${CATEGORIES[item.kind].join(" | ")}）`,
-      );
     }
     if (!item.title) errors.push(`${at} title 不能为空`);
     if (!item.prompt) errors.push(`${at} prompt 不能为空`);
+    if (!Array.isArray(item.tags) || item.tags.length === 0) {
+      errors.push(`${at} tags 至少写一个（分类即标签）`);
+    } else if (item.tags.some((t) => typeof t !== "string" || !t.trim())) {
+      errors.push(`${at} tags 里有空值或非字符串`);
+    }
     if (item.params?.aspect && !VALID_ASPECTS.includes(item.params.aspect)) {
       errors.push(`${at} params.aspect 非法：${item.params.aspect}`);
     }
@@ -110,10 +106,11 @@ async function main() {
 
   const img = PROMPTS.filter((p) => p.kind === "image").length;
   const vid = PROMPTS.filter((p) => p.kind === "video").length;
+  const tags = new Set(PROMPTS.flatMap((p) => p.tags));
   console.log(
     PROMPTS.length === 0
-      ? "  ✓ 数据校验通过：提示词库为空（结构定稿阶段，符合预期）"
-      : `  ✓ 数据校验通过：共 ${PROMPTS.length} 条（图片 ${img} / 视频 ${vid}）`,
+      ? "  ✓ 数据校验通过：提示词库为空"
+      : `  ✓ 数据校验通过：共 ${PROMPTS.length} 条（图片 ${img} / 视频 ${vid}），${tags.size} 个标签`,
   );
 }
 

@@ -1,33 +1,45 @@
 # PromptVault
 
-个人 AIGC 提示词库。图片与视频分开管理，按分类浏览，预览 + 一键复制。
+个人 AIGC 提示词库。图片与视频分开管理，按标签筛选、按名称或时间排序，预览 + 一键复制。
 
 Next.js 静态导出，零后端，计划部署到 GitHub Pages。
 
-> **当前阶段：版式已定稿，等待内容填充。** 三个界面与主题系统完成，提示词库暂时为空。
+> **当前阶段：版式与交互完成，内容为【示例】占位。** 正式提示词逐条替换 `src/data/prompts.ts` 即可。
 
 ## 界面
 
 | 路由 | 内容 |
 |---|---|
-| `/` | 首页：两个大入口（图片 / 视频），带预览占位 |
+| `/` | 首页：两个大入口（图片 / 视频），宽屏并排、窄屏堆叠 |
 | `/image` | 图片提示词 |
 | `/video` | 视频提示词 |
+| `/p/<id>` | 单条详情：完整提示词、负向、参数、备注、复制 |
 
 `/image` 与 `/video` **共用同一个 `PromptPage` 组件**，差异只有两处：预览框比例（4:3 vs 16:9）和视频条目的悬停播放能力。
 
 ## 条目版式：传统卡片
 
-在三种候选（无卡片媒体块 / 传统卡片 / 编辑式列表）中选定了**传统卡片**：
-
 - 每条内容是一个 `border` + 极轻阴影的圆角卡片
 - 预览框统一比例，`object-cover` 裁切，保证网格对齐
 - 提示词固定两行截断，完整内容进详情页
-- 底部一行：分类标签 + 复制按钮
+- 底部一行：标签（最多 3 个）+ 复制按钮
 
 实现见 `src/components/PromptCard.tsx`。
 
-> 详情页 `/p/<id>` 暂未挂载。静态导出要求 `generateStaticParams` 至少产出一条路由，内容为空时会导致构建失败，等有内容后再启用。
+## 标签与排序
+
+**分类就是标签**，没有独立的分类型字段。每条内容的 `tags` 自由填写，页面顶部自动汇总出该页出现过的所有标签（带出现次数），点选即可筛选。
+
+排序提供四种：
+
+| 选项 | 依据 |
+|---|---|
+| 默认顺序 | 数据文件里的原始顺序 |
+| 按名称 | `localeCompare("zh-CN")`，按拼音 |
+| 最新收录 | `added` 降序 |
+| 最早收录 | `added` 升序 |
+
+筛选与排序都是客户端状态，不写 URL。搜索暂未实现（pending）。
 
 ## 技术栈
 
@@ -53,37 +65,32 @@ pnpm validate     # 只跑数据校验
 
 ## 主题系统
 
-`src/app/globals.css` 定义了一组语义色变量（`--canvas` / `--surface` / `--ink` / `--muted` / `--hairline` / `--accent`），浅色挂在 `:root`，深色挂在 `[data-theme="dark"]`。
+`src/app/globals.css` 定义一组语义色变量（`--canvas` / `--surface` / `--ink` / `--muted` / `--hairline` / `--accent`），浅色挂 `:root`，深色挂 `[data-theme="dark"]`。
 
 组件只写 `bg-canvas`、`text-ink`、`border-hairline` 这类语义类名，**不需要为明暗各写一套样式**。
 
-- 首次访问：`layout.tsx` 里的内联脚本在首帧前读取 `localStorage`，没有记录就跟随 `prefers-color-scheme`，避免闪烁
+- 首次访问：`layout.tsx` 的内联脚本在首帧前读 `localStorage`，没有记录就跟随 `prefers-color-scheme`，避免闪烁
 - 手动切换：右上角三段式控件（跟随系统 / 浅色 / 深色），选择写入 `localStorage`
 
 ## 数据模型
 
 ```ts
 {
-  id: "camera-orbit",
-  kind: "video",              // image | video —— 决定出现在哪个页面
-  title: "环绕推镜",
-  category: "camera",         // 取值见 categories.ts 对应 kind
+  id: "example-video-orbit",   // 唯一，同时是 /p/<id>
+  kind: "video",               // image | video
+  title: "【示例】环绕推镜",
+  tags: ["运镜", "产品"],       // 分类即标签，第一个显示为卡片角标
   models: ["Kling 2.1"],
   prompt: "...",
   negative: "...",
   params: { aspect: "16:9", duration: 5, fps: 30 },
-  tags: ["推镜"],
   notes: "实测备注",
+  added: "2026-11-19",         // 用于按时间排序
   media: { cover: "covers/x.png", video: "videos/x.mp4" },
 }
 ```
 
-两套分类体系：
-
-- **图片**：人像 / 场景 / 产品 / 插画 / 建筑 / 风格
-- **视频**：运镜 / 光影 / 材质 / 结构 / 风格 / 负向 / 流程
-
-`pnpm validate` 会检查 id 唯一、kind 与 category 匹配、画幅/时长格式、媒体文件是否存在。内容为空时只提示、不报错。
+`pnpm validate` 检查 id 唯一、kind 合法、tags 非空、画幅/时长/日期格式、媒体文件是否存在。
 
 ## 素材
 
@@ -93,8 +100,6 @@ pnpm validate     # 只跑数据校验
 | `prompt-vault/assets/`（仓内） | 发布与 CI 用 | ✓（视频默认忽略） |
 
 `scripts/sync-media.mjs` 只同步 `prompts.ts` 里被引用到的媒体到 `public/media/`。路径相对于素材库根目录，例如 `covers/foo.png`。
-
-覆盖方式：
 
 ```bash
 ASSETS_DIR=assets pnpm dev        # 强制用仓内素材
@@ -109,11 +114,6 @@ husky 挂了两个钩子：
 - `commit-msg`：跑 `commitlint`，不符合 Conventional Commits 直接拒绝
 
 类型：`feat` `fix` `refactor` `style` `docs` `test` `ci` `chore` `perf` `build`。
-
-```bash
-git commit -m "feat: 增加图片提示词分类筛选"
-git commit -m "fix: 修正深色模式下占位文字对比度"
-```
 
 ## 部署（尚未执行）
 
@@ -130,9 +130,11 @@ src/
 │  ├─ globals.css       语义色 token + 基础样式
 │  ├─ page.tsx          首页
 │  ├─ image/page.tsx    图片提示词
-│  └─ video/page.tsx    视频提示词
+│  ├─ video/page.tsx    视频提示词
+│  └─ p/[id]/page.tsx   详情页
 ├─ components/
 │  ├─ PromptPage.tsx    两个提示词页共用的模板
+│  ├─ PromptList.tsx    标签筛选 + 排序 + 网格
 │  ├─ PromptCard.tsx    条目卡片
 │  ├─ CopyButton.tsx    复制按钮
 │  ├─ SiteHeader.tsx    毛玻璃导航
@@ -140,7 +142,7 @@ src/
 │  └─ ThemeToggle.tsx   明暗切换
 ├─ data/
 │  ├─ prompts.ts        ← 唯一需要编辑的内容文件
-│  ├─ categories.ts     两套分类体系
+│  ├─ categories.ts     图片/视频两类的展示元信息
 │  └─ types.ts
 └─ lib/
    ├─ asset.ts          媒体路径解析 + 剪贴板
@@ -159,6 +161,7 @@ scripts/
 
 ## 已知边界
 
-- 提示词库为空，列表与详情能力只有骨架
-- 没有搜索、分类筛选、排序——等内容定型后再加
+- 内容全是【示例】占位，标题与提示词以「【示例】」开头，便于一眼区分
+- 搜索未实现
+- 筛选与排序不写 URL，刷新会回到默认
 - 静态导出，没有服务端搜索或收藏同步

@@ -88,7 +88,10 @@ export default function HomePage() {
         <p className="pv-rise text-[12px] font-medium uppercase tracking-[0.2em] text-muted">
           Personal AIGC Library
         </p>
-        <h1 className="display pv-rise mt-4 max-w-[18ch] text-[44px] sm:text-[64px]" style={{ animationDelay: "60ms" }}>
+        <h1
+          className="display pv-rise mt-4 max-w-[18ch] text-[34px] sm:text-[48px] lg:text-[64px]"
+          style={{ animationDelay: "60ms" }}
+        >
           把好用的提示词
           <br />
           收进一个地方

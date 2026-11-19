@@ -6,8 +6,8 @@ export interface ViewItem {
   id: string;
   title: string;
   prompt: string;
-  /** 分类标签 */
-  tag?: string;
+  /** 分类即标签，第一个显示为角标 */
+  tags?: string[];
   /** 预览图 URL；没有则用 gradient 占位 */
   cover?: string;
   /** 占位渐变（CSS background 值） */
@@ -54,9 +54,9 @@ export function PromptCard({ item, ratio = "4/3", href }: Props) {
           </div>
         )}
 
-        {item.tag && (
+        {item.tags?.[0] && (
           <span className="absolute left-3 top-3 rounded-full bg-black/25 px-2.5 py-1 text-[10.5px] font-medium text-white backdrop-blur-md">
-            {item.tag}
+            {item.tags[0]}
           </span>
         )}
 
@@ -78,7 +78,9 @@ export function PromptCard({ item, ratio = "4/3", href }: Props) {
         </h3>
         <p className="mt-1.5 line-clamp-2 text-[12.5px] leading-[1.6] text-muted">{item.prompt}</p>
         <div className="mt-3 flex items-center justify-between gap-3">
-          <span className="truncate text-[11px] text-muted">{item.tag}</span>
+          <span className="truncate text-[11px] text-muted">
+            {(item.tags ?? []).slice(0, 3).join(" · ")}
+          </span>
           <CopyButton text={item.prompt} label="复制提示词" variant="ghost" />
         </div>
       </div>

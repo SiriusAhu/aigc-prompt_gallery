@@ -24,8 +24,8 @@ export interface PromptItem {
   /** 图片还是视频 */
   kind: PromptKind;
   title: string;
-  /** 分类 id，取值见 categories.ts 中对应 kind 的列表 */
-  category: string;
+  /** 分类即标签，自由填写；第一个同时作为卡片角标 */
+  tags: string[];
   /** 适用模型 */
   models?: string[];
   /** 正向提示词正文 */
@@ -33,10 +33,9 @@ export interface PromptItem {
   /** 负向提示词 */
   negative?: string;
   params?: PromptParams;
-  tags?: string[];
   /** 实测备注 */
   notes?: string;
-  /** 收录日期 YYYY-MM-DD */
+  /** 收录日期 YYYY-MM-DD，用于按时间排序 */
   added?: string;
   /** 来源链接 */
   source?: string;
