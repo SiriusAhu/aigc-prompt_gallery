@@ -128,11 +128,19 @@ husky 挂了两个钩子：
 
 类型：`feat` `fix` `refactor` `style` `docs` `test` `ci` `chore` `perf` `build`。
 
-## 部署（尚未执行）
+## 部署
 
-`.github/workflows/deploy.yml` 已就绪：安装依赖 → `pnpm audit --audit-level high` → 构建 → 上传 `out/` → 部署 Pages。
+**线上地址：<https://ahublog.xyz/aigc-prompt_gallery/>**
+
+仓库：<https://github.com/SiriusAhu/aigc-prompt_gallery>
+
+`.github/workflows/deploy.yml`：安装依赖 → `pnpm audit --audit-level high` → 构建 → 上传 `out/` → 部署 Pages。push 到 `main` 自动触发。
 
 `basePath` 由 workflow 从 `GITHUB_REPOSITORY` 自动推导成 `/<repo>/`，**不要在 `next.config.ts` 里写死**。`postbuild.mjs` 会自动写入 `.nojekyll`，否则 Pages 的 Jekyll 会吞掉 `_next/`。
+
+> **自定义域名**：账号级绑定了 `ahublog.xyz`，所以项目站点实际走 `ahublog.xyz/<repo>/`，`siriusahu.github.io/<repo>/` 会 301 过去。分享链接时用自定义域名的地址。
+
+> **pnpm 版本只能声明一处**：`package.json` 的 `packageManager` 是唯一来源，workflow 里不要再写 `version`，否则会报 `ERR_PNPM_BAD_PM_VERSION`。
 
 ## 目录
 
