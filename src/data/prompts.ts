@@ -28,7 +28,7 @@ export const PROMPTS: PromptItem[] = [
     params: { aspect: "1:1" },
     added: "2026-11-19",
     notes:
-      "四轴基线初版。时间轴不写「晚上」两个字，而是把光源交给电视；风格轴不堆形容词，只落在一句「iPhone 随手拍」。后续消融实验逐段删减对比。",
+      "依据影视飓风 AI 课堂《图片提示词》思维导图（时间 / 主体 / 场景 / 风格 四条主轴）写的第一条基线。时间轴不写「晚上」两个字，而是把光源交给电视；风格轴不堆形容词，只落在一句「iPhone 随手拍」。后续消融实验逐段删减对比。",
     media: {
       images: [
         { src: "images/boy-watching-tv/01.webp", seed: null },
