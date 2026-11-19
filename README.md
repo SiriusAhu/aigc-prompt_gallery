@@ -21,11 +21,12 @@ Next.js 静态导出，零后端，计划部署到 GitHub Pages。
 
 - 每条内容是一个 `border` + 极轻阴影的圆角卡片
 - 预览框统一比例，`object-cover` 裁切，保证网格对齐
-- **同一条提示词的多张结果只占一个卡片位**：桌面端悬停时像抽牌一样把全部结果展开成扇形，每张标注种子（模型不暴露种子时显示 `seed N/A`）；触屏没有 hover，退化为单图 + 左右按钮循环
+- **同一条提示词的多张结果只占一个卡片位**：卡片上单图展示 + 左右按钮循环（`1/3` 计数），点击预览图打开大图预览
+- 大图预览支持方向键切换、`Esc` / 遮罩 / 右上角按钮关闭，显示序号与种子
 - 提示词固定两行截断，完整内容进详情页
 - 底部依次是：标签、复制按钮、生成模型
 
-实现见 `src/components/PromptCard.tsx` 与 `src/components/ImageDeck.tsx`。
+实现见 `src/components/PromptCard.tsx`、`src/components/ImageDeck.tsx`、`src/components/Lightbox.tsx`。
 
 ## 标签与排序
 
@@ -101,9 +102,9 @@ pnpm validate     # 只跑数据校验
   notes: "实测备注",
   added: "2026-11-19",
   media: {
-    images: [                  // 同一提示词的多张结果，卡片上悬停抽牌展开
-      { src: "images/boy-watching-tv/01.png", seed: null },  // seed: null → 显示 seed N/A
-      { src: "images/boy-watching-tv/02.png", seed: 123456 },
+    images: [                  // 同一提示词的多张结果，卡片上左右切换
+      { src: "images/boy-watching-tv/01.webp", seed: null },  // seed: null → 显示 seed N/A
+      { src: "images/boy-watching-tv/02.webp", seed: 123456 },
     ],
     video: "videos/x.mp4",     // 可选，有值才启用悬停播放
   },

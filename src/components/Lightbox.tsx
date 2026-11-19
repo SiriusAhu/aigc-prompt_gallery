@@ -60,11 +60,18 @@ export function Lightbox({ images, index, onClose, onNavigate, title }: Props) {
       aria-modal="true"
       aria-label={title ?? "图片大图预览"}
       className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
-      onClick={onClose}
+      onClick={(e) => {
+        // Portal 的事件会沿 React 组件树冒泡，不拦住会触发宿主卡片的 onClick
+        e.stopPropagation();
+        onClose();
+      }}
     >
       <button
         type="button"
-        onClick={onClose}
+        onClick={(e) => {
+          e.stopPropagation();
+          onClose();
+        }}
         aria-label="关闭预览"
         className="absolute right-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white backdrop-blur-md transition-colors hover:bg-white/20"
       >
