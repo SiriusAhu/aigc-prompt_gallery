@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { KIND_META } from "@/data/categories";
 import type { PromptKind } from "@/data/types";
 import { byKind } from "@/lib/prompts";
@@ -53,7 +54,30 @@ export function PromptPage({ kind }: { kind: PromptKind }) {
         </p>
       </header>
 
-      {items.length > 0 ? <PromptList items={items} ratio={ratio} /> : <EmptyState kind={kind} />}
+      {items.length > 0 ? (
+        <Suspense fallback={<ListSkeleton />}>
+          <PromptList items={items} ratio={ratio} />
+        </Suspense>
+      ) : (
+        <EmptyState kind={kind} />
+      )}
+    </div>
+  );
+}
+
+/** useSearchParams 在静态导出下需要一个 Suspense 边界 */
+function ListSkeleton() {
+  return (
+    <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
+      {Array.from({ length: 3 }).map((_, i) => (
+        <div key={i} className="rounded-[24px] border border-hairline bg-raised p-2.5">
+          <div className="aspect-[4/3] animate-pulse rounded-[18px] bg-surface" />
+          <div className="space-y-2 px-2 pb-1.5 pt-3.5">
+            <div className="h-4 w-2/3 animate-pulse rounded bg-surface" />
+            <div className="h-3 w-full animate-pulse rounded bg-surface" />
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
