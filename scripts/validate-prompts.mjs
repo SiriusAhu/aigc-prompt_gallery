@@ -3,6 +3,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 import { fileURLToPath } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -19,24 +20,17 @@ const MEDIA_EXT = /\.(mp4|webm|mov|png|jpe?g|webp|avif|gif)$/i;
 const errors = [];
 const warnings = [];
 
+/**
+ * 直接 import .ts。依赖 Node 22 的 --experimental-strip-types（见 package.json 的 script）。
+ * 这样不需要 esbuild，也就没有依赖构建脚本需要审批。
+ */
 async function load() {
   const src = path.resolve(ROOT, "src/data/prompts.ts");
   if (!fs.existsSync(src)) {
     errors.push("找不到 src/data/prompts.ts");
     return [];
   }
-  const { build } = await import("esbuild");
-  const out = await build({
-    entryPoints: [src],
-    bundle: true,
-    format: "esm",
-    write: false,
-    platform: "node",
-    logLevel: "silent",
-  });
-  const mod = await import(
-    `data:text/javascript;base64,${Buffer.from(out.outputFiles[0].text).toString("base64")}`
-  );
+  const mod = await import(pathToFileURL(src).href);
   return mod.PROMPTS ?? [];
 }
 

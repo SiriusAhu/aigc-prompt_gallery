@@ -3,11 +3,15 @@
   "private": true,
   "version": "0.3.0",
   "type": "module",
+  "packageManager": "pnpm@12.18.0",
+  "engines": {
+    "node": ">=22.6"
+  },
   "scripts": {
-    "dev": "node scripts/sync-media.mjs && next dev",
-    "build": "node scripts/validate-prompts.mjs && node scripts/sync-media.mjs && next build && node scripts/postbuild.mjs",
+    "dev": "node --experimental-strip-types --disable-warning=ExperimentalWarning scripts/validate-prompts.mjs && node scripts/sync-media.mjs && next dev",
+    "build": "node --experimental-strip-types --disable-warning=ExperimentalWarning scripts/validate-prompts.mjs && node scripts/sync-media.mjs && next build && node scripts/postbuild.mjs",
     "start": "node scripts/serve-out.mjs 5190",
-    "validate": "node scripts/validate-prompts.mjs",
+    "validate": "node --experimental-strip-types --disable-warning=ExperimentalWarning scripts/validate-prompts.mjs",
     "sync:media": "node scripts/sync-media.mjs",
     "lint": "oxlint",
     "lint:commit": "commitlint --edit",
@@ -25,7 +29,6 @@
     "@types/node": "^24.19.2",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
-    "esbuild": "^0.28.2",
     "husky": "^9.1.7",
     "oxlint": "^1.90.0",
     "tailwindcss": "^4.3.5",
