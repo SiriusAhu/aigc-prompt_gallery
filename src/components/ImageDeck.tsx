@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Lightbox } from "./Lightbox";
 
 export interface DeckImage {
@@ -21,7 +21,38 @@ interface Props {
 export function ImageDeck({ images, alt, ratio = "4/3" }: Props) {
   const [index, setIndex] = useState(0);
   const [lightbox, setLightbox] = useState(false);
+  const deckRef = useRef<HTMLDivElement>(null);
   const total = images.length;
+
+  /**
+   * 悬停时用滚轮切换。React 的 onWheel 是被动监听，无法阻止页面滚动，
+   * 所以挂原生监听并显式声明 passive: false。
+   */
+  useEffect(() => {
+    const el = deckRef.current;
+    if (!el || total <= 1) return;
+
+    let acc = 0;
+    let last = 0;
+    const onWheel = (e: WheelEvent) => {
+      if (Math.abs(e.deltaY) < 2) return;
+      e.preventDefault();
+
+      const now = Date.now();
+      if (now - last < 180) return; // 冷却，避免触控板一划连跳好几张
+
+      acc += e.deltaY;
+      if (Math.abs(acc) < 40) return;
+
+      const dir = acc > 0 ? 1 : -1;
+      acc = 0;
+      last = now;
+      setIndex((i) => (i + dir + total) % total);
+    };
+
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, [total]);
 
   const go = (delta: number) => {
     if (total <= 1) return;
@@ -32,6 +63,7 @@ export function ImageDeck({ images, alt, ratio = "4/3" }: Props) {
 
   return (
     <div
+      ref={deckRef}
       className={`pv-deck relative cursor-zoom-in overflow-hidden rounded-[18px] bg-surface ${box}`}
       onClick={() => setLightbox(true)}
     >

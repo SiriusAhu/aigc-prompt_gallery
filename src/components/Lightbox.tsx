@@ -59,7 +59,7 @@ export function Lightbox({ images, index, onClose, onNavigate, title }: Props) {
       role="dialog"
       aria-modal="true"
       aria-label={title ?? "图片大图预览"}
-      className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
+      className="pv-fade-in fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
       onClick={(e) => {
         // Portal 的事件会沿 React 组件树冒泡，不拦住会触发宿主卡片的 onClick
         e.stopPropagation();
@@ -82,9 +82,10 @@ export function Lightbox({ images, index, onClose, onNavigate, title }: Props) {
 
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
+        key={current.src}
         src={current.src}
         alt={title ? `${title} 第 ${index + 1} 张` : ""}
-        className="max-h-[82vh] max-w-[92vw] rounded-2xl object-contain shadow-[0_30px_80px_rgba(0,0,0,0.6)]"
+        className="pv-pop-in max-h-[82vh] max-w-[92vw] rounded-2xl object-contain shadow-[0_30px_80px_rgba(0,0,0,0.6)]"
         onClick={(e) => e.stopPropagation()}
       />
 

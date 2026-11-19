@@ -1,8 +1,11 @@
 name: Deploy to GitHub Pages
 
 on:
+  # 日常提交不再自动部署。发布时二选一：
+  #   1. 打标签：git tag v0.1.0 && git push origin v0.1.0
+  #   2. 在 Actions 页面手动点 Run workflow
   push:
-    branches: [main]
+    tags: ["v*"]
   workflow_dispatch:
 
 permissions:

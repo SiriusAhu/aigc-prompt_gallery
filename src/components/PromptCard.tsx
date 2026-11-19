@@ -24,17 +24,19 @@ interface Props {
   /** 预览框比例：图片页 4/3，视频页 16/9 */
   ratio?: "4/3" | "16/9";
   href?: string;
+  /** 用于错峰入场动画 */
+  index?: number;
 }
 
 const FALLBACK = "linear-gradient(135deg, var(--tile-1) 0%, var(--tile-2) 60%, var(--tile-1) 100%)";
 
-export function PromptCard({ item, ratio = "4/3", href }: Props) {
+export function PromptCard({ item, ratio = "4/3", href, index = 0 }: Props) {
   const hasImages = Boolean(item.images && item.images.length > 0);
 
   return (
     <article
-      className="group flex flex-col rounded-[24px] border border-hairline bg-raised p-2.5 transition-all duration-300 hover:-translate-y-0.5"
-      style={{ boxShadow: "var(--shadow)" }}
+      className="pv-rise group flex flex-col rounded-[24px] border border-hairline bg-raised p-2.5 transition-all duration-300 hover:-translate-y-1 hover:border-ink/15 hover:shadow-[0_18px_40px_-24px_rgba(0,0,0,0.45)]"
+      style={{ boxShadow: "var(--shadow)", animationDelay: `${Math.min(index, 12) * 45}ms` }}
     >
       {hasImages ? (
         <ImageDeck images={item.images!} alt={item.title} ratio={ratio} />
