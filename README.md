@@ -136,6 +136,25 @@ husky 挂了两个钩子：
 
 类型：`feat` `fix` `refactor` `style` `docs` `test` `ci` `chore` `perf` `build`。
 
+## 版本与发布
+
+当前处于 **0.x 阶段**（1.0 之前，接口与数据结构仍可能调整）。约定：
+
+| 版本位 | 什么时候变 | 例子 |
+|---|---|---|
+| `0.x.0` | 一批新功能，或数据结构/行为有破坏性调整 | 0.3.0 → 0.4.0 |
+| `0.x.y` | 只修 bug、调样式、补文档 | 0.4.0 → 0.4.1 |
+| `1.0.0` | 提示词数据结构与页面结构稳定，内容开始正式沉淀 | — |
+
+发布走标签触发部署（普通 `git push` 不会部署）：
+
+```bash
+pnpm release:patch        # 0.4.0 → 0.4.1，自动生成 chore(release): v0.4.1 提交与标签
+pnpm release:minor        # 0.4.1 → 0.5.0
+
+git push origin main --follow-tags   # 推代码 + 标签，触发 Actions 部署
+```
+
 ## 部署
 
 **线上地址：<https://ahublog.xyz/aigc-prompt_gallery/>**
