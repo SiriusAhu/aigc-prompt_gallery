@@ -147,9 +147,12 @@ export function PromptList({
                 title: p.title,
                 prompt: p.prompt,
                 tags: p.tags,
-                images: p.media?.images?.map((src) => assetUrl(src)).filter(Boolean) as
-                  | string[]
-                  | undefined,
+                images: p.media?.images
+                  ?.map((img) => {
+                    const src = assetUrl(img.src);
+                    return src ? { src, seed: img.seed } : null;
+                  })
+                  .filter(Boolean) as { src: string; seed?: number | null }[] | undefined,
                 hasVideo: Boolean(p.media?.video),
                 model: p.models?.[0],
               }}

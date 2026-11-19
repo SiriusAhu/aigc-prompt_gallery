@@ -11,12 +11,23 @@ export interface PromptParams {
   extra?: Record<string, string | number>;
 }
 
+/** 一张生成结果 */
+export interface MediaImage {
+  /** 相对素材库根目录的路径 */
+  src: string;
+  /**
+   * 生成种子。
+   * 省略或 null 表示该模型不暴露种子（如 gpt-image 系列），展示为 seed N/A。
+   */
+  seed?: number | null;
+}
+
 export interface MediaRef {
   /**
-   * 同一条提示词的多个生成结果，按顺序展示。
-   * 卡片上只占一个位置，用左右按钮循环切换。
+   * 同一条提示词的多张结果。
+   * 卡片上只占一个位置，悬停时像抽牌一样展开。
    */
-  images?: string[];
+  images?: MediaImage[];
   /** 视频文件；有它才会启用「悬停播放」 */
   video?: string;
 }

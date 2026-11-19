@@ -30,7 +30,12 @@ export default async function PromptDetailPage({ params }: { params: Promise<Par
   if (!item) notFound();
 
   const kindMeta = KIND_META[item.kind];
-  const images = (item.media?.images ?? []).map((src) => assetUrl(src)).filter(Boolean) as string[];
+  const images = (item.media?.images ?? [])
+    .map((img) => {
+      const src = assetUrl(img.src);
+      return src ? { src, seed: img.seed } : null;
+    })
+    .filter(Boolean) as { src: string; seed?: number | null }[];
   const video = assetUrl(item.media?.video);
 
   return (
@@ -68,7 +73,7 @@ export default async function PromptDetailPage({ params }: { params: Promise<Par
             loop
             playsInline
             preload="metadata"
-            poster={images[0]}
+            poster={images[0]?.src}
             className="aspect-video w-full object-contain"
           />
         </div>
@@ -76,15 +81,22 @@ export default async function PromptDetailPage({ params }: { params: Promise<Par
         <div
           className={`mt-8 grid gap-3 ${images.length > 1 ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1"}`}
         >
-          {images.map((src, i) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={src}
-              src={src}
-              alt={`${item.title} 第 ${i + 1} 张`}
-              loading={i === 0 ? "eager" : "lazy"}
-              className="w-full rounded-[20px] border border-hairline bg-surface object-cover"
-            />
+          {images.map((img, i) => (
+            <figure key={img.src} className="space-y-1.5">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={img.src}
+                alt={`${item.title} 第 ${i + 1} 张`}
+                loading={i === 0 ? "eager" : "lazy"}
+                className="w-full rounded-[20px] border border-hairline bg-surface object-cover"
+              />
+              <figcaption className="flex items-center justify-between px-1 font-mono text-[10.5px] text-muted">
+                <span>
+                  {i + 1}/{images.length}
+                </span>
+                <span>{img.seed == null ? "seed N/A" : `seed ${img.seed}`}</span>
+              </figcaption>
+            </figure>
           ))}
         </div>
       ) : (

@@ -91,7 +91,16 @@ async function main() {
       if (item.media.images.length === 0) {
         errors.push(`${at} media.images 不能是空数组`);
       }
-      item.media.images.forEach((rel, i) => checkMedia(item, `media.images[${i}]`, rel));
+      item.media.images.forEach((img, i) => {
+        if (!img || typeof img.src !== "string" || !img.src) {
+          errors.push(`${at} media.images[${i}] 缺少 src`);
+          return;
+        }
+        if (img.seed != null && typeof img.seed !== "number") {
+          errors.push(`${at} media.images[${i}].seed 必须是数字或 null`);
+        }
+        checkMedia(item, `media.images[${i}]`, img.src);
+      });
     }
     checkMedia(item, "media.video", item.media?.video);
   }

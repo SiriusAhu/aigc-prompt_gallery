@@ -1,7 +1,7 @@
 "use client";
 
 import { CopyButton } from "./CopyButton";
-import { ImageCarousel } from "./ImageCarousel";
+import { ImageDeck, type DeckImage } from "./ImageDeck";
 
 export interface ViewItem {
   id: string;
@@ -9,8 +9,8 @@ export interface ViewItem {
   prompt: string;
   /** 分类即标签，第一个显示为角标 */
   tags?: string[];
-  /** 同一提示词的多张生成结果 */
-  images?: string[];
+  /** 同一提示词的多张生成结果，悬停抽牌展开 */
+  images?: DeckImage[];
   /** 占位渐变（无图时使用） */
   gradient?: string;
   /** 是否带视频（决定是否显示悬停提示） */
@@ -37,9 +37,7 @@ export function PromptCard({ item, ratio = "4/3", href }: Props) {
       style={{ boxShadow: "var(--shadow)" }}
     >
       {hasImages ? (
-        <div className="overflow-hidden rounded-[18px]">
-          <ImageCarousel images={item.images!} alt={item.title} ratio={ratio} />
-        </div>
+        <ImageDeck images={item.images!} alt={item.title} ratio={ratio} />
       ) : (
         <div
           className={`relative overflow-hidden rounded-[18px] bg-surface ${

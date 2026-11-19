@@ -9,8 +9,8 @@ import type { PromptItem } from "./types";
  * - kind 决定出现在 /image 还是 /video
  * - tags 就是分类，自由填写，第一个会显示在卡片角标
  * - added 用于按时间排序，格式 YYYY-MM-DD
- * - media.images 放同一条提示词的多张结果，卡片上用一个轮播位展示
- *   路径相对于素材库根目录：{ images: ["images/xxx/01.png"] }
+ * - media.images 放同一条提示词的多张结果（可带 seed），卡片上悬停展开
+ *   路径相对于素材库根目录：{ images: [{ src: "images/xxx/01.png", seed: 42 }] }
  * - media.video 有值才启用悬停播放
  */
 export const PROMPTS: PromptItem[] = [
@@ -31,9 +31,9 @@ export const PROMPTS: PromptItem[] = [
       "四轴基线初版。时间轴不写「晚上」两个字，而是把光源交给电视；风格轴不堆形容词，只落在一句「iPhone 随手拍」。后续消融实验逐段删减对比。",
     media: {
       images: [
-        "images/boy-watching-tv/01.png",
-        "images/boy-watching-tv/02.png",
-        "images/boy-watching-tv/03.png",
+        { src: "images/boy-watching-tv/01.png", seed: null },
+        { src: "images/boy-watching-tv/02.png", seed: null },
+        { src: "images/boy-watching-tv/03.png", seed: null },
       ],
     },
   },
