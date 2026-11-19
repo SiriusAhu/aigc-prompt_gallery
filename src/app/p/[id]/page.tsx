@@ -6,6 +6,7 @@ import { KIND_META } from "@/data/categories";
 import { assetUrl } from "@/lib/asset";
 import { byId } from "@/lib/prompts";
 import { CopyButton } from "@/components/CopyButton";
+import { ImageGallery } from "@/components/ImageGallery";
 
 interface Params {
   id: string;
@@ -78,26 +79,8 @@ export default async function PromptDetailPage({ params }: { params: Promise<Par
           />
         </div>
       ) : images.length > 0 ? (
-        <div
-          className={`mt-8 grid gap-3 ${images.length > 1 ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1"}`}
-        >
-          {images.map((img, i) => (
-            <figure key={img.src} className="space-y-1.5">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={img.src}
-                alt={`${item.title} 第 ${i + 1} 张`}
-                loading={i === 0 ? "eager" : "lazy"}
-                className="w-full rounded-[20px] border border-hairline bg-surface object-cover"
-              />
-              <figcaption className="flex items-center justify-between px-1 font-mono text-[10.5px] text-muted">
-                <span>
-                  {i + 1}/{images.length}
-                </span>
-                <span>{img.seed == null ? "seed N/A" : `seed ${img.seed}`}</span>
-              </figcaption>
-            </figure>
-          ))}
+        <div className="mt-8">
+          <ImageGallery images={images} title={item.title} />
         </div>
       ) : (
         <div className="mt-8 grid aspect-video w-full place-items-center rounded-[28px] border border-hairline bg-surface">

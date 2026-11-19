@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Lightbox } from "./Lightbox";
 
 export interface DeckImage {
   src: string;
@@ -25,6 +26,7 @@ function seedLabel(seed?: number | null) {
 export function ImageDeck({ images, alt, ratio = "4/3" }: Props) {
   const [index, setIndex] = useState(0);
   const [open, setOpen] = useState(false);
+  const [lightbox, setLightbox] = useState(false);
   const total = images.length;
   const mid = (total - 1) / 2;
 
@@ -40,9 +42,10 @@ export function ImageDeck({ images, alt, ratio = "4/3" }: Props) {
 
   return (
     <div
-      className={`pv-deck relative overflow-hidden bg-surface ${box} rounded-[18px]`}
+      className={`pv-deck relative cursor-zoom-in overflow-hidden rounded-[18px] bg-surface ${box}`}
       onMouseEnter={() => canHover && total > 1 && setOpen(true)}
       onMouseLeave={() => setOpen(false)}
+      onClick={() => setLightbox(true)}
     >
       {/* 基础层：当前图 */}
       {images.map((img, i) => (
@@ -144,6 +147,16 @@ export function ImageDeck({ images, alt, ratio = "4/3" }: Props) {
         >
           ×{total}
         </span>
+      )}
+
+      {lightbox && (
+        <Lightbox
+          images={images}
+          index={index}
+          title={alt}
+          onNavigate={setIndex}
+          onClose={() => setLightbox(false)}
+        />
       )}
     </div>
   );
