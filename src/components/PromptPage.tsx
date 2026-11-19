@@ -1,0 +1,82 @@
+import { KIND_META } from "@/data/categories";
+import type { PromptKind } from "@/data/types";
+import { byKind } from "@/lib/prompts";
+import { PromptItemView } from "./PromptItemView";
+
+function EmptyState({ kind }: { kind: PromptKind }) {
+  return (
+    <div className="rounded-[28px] border border-dashed border-hairline bg-surface/60 px-6 py-24 text-center">
+      <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-canvas text-muted">
+        {kind === "image" ? (
+          <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.4">
+            <rect x="3" y="4.5" width="18" height="15" rx="2.5" />
+            <circle cx="8.5" cy="10" r="1.6" />
+            <path d="M4 17l5-5 4 4 3-2.5 4 3.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        ) : (
+          <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.4">
+            <rect x="3" y="5" width="13" height="14" rx="2.5" />
+            <path d="M16 9.5l5-2.5v10l-5-2.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        )}
+      </div>
+      <h2 className="mt-5 text-[15px] font-semibold tracking-[-0.01em]">还没有收录</h2>
+      <p className="mx-auto mt-2 max-w-[42ch] text-[12.5px] leading-relaxed text-muted">
+        这个页面暂时是空的。等视觉方案定稿后再往里填内容，
+        目前只保留了页面骨架和版式。
+      </p>
+      <p className="mt-4 font-mono text-[11px] text-muted/70">
+        src/data/prompts.ts · kind: &quot;{kind}&quot;
+      </p>
+    </div>
+  );
+}
+
+export function PromptPage({ kind }: { kind: PromptKind }) {
+  const items = byKind(kind);
+  const meta = KIND_META[kind];
+  const ratio = kind === "image" ? "4/3" : "16/9";
+
+  return (
+    <div className="mx-auto w-full max-w-[1120px] px-5">
+      <header className="pb-10 pt-16 sm:pb-12 sm:pt-20">
+        <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-muted">
+          {kind === "image" ? "Image" : "Video"} Prompts
+        </p>
+        <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
+          <h1 className="display text-[38px] sm:text-[52px]">{meta.label}</h1>
+          <span className="mb-1.5 rounded-full border border-hairline px-3 py-1 text-[11.5px] text-muted">
+            {items.length} 条
+          </span>
+        </div>
+        <p className="mt-4 max-w-[52ch] text-[14px] leading-relaxed text-muted sm:text-[15px]">
+          {meta.blurb}
+          {kind === "video" && " 视频条目支持鼠标悬停播放。"}
+        </p>
+      </header>
+
+      {items.length > 0 ? (
+        <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+          {items.map((p) => (
+            <PromptItemView
+              key={p.id}
+              variant="tile"
+              ratio={ratio}
+              href={`/p/${p.id}`}
+              item={{
+                id: p.id,
+                title: p.title,
+                prompt: p.prompt,
+                tag: p.tags?.[0],
+                cover: p.media?.cover,
+                hasVideo: kind === "video" && Boolean(p.media?.video),
+              }}
+            />
+          ))}
+        </div>
+      ) : (
+        <EmptyState kind={kind} />
+      )}
+    </div>
+  );
+}

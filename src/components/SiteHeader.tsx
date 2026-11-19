@@ -2,85 +2,69 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CATEGORIES } from "@/data/categories";
+import { ThemeToggle } from "./ThemeToggle";
+
+const NAV = [
+  { href: "/", label: "首页" },
+  { href: "/image", label: "图片提示词" },
+  { href: "/video", label: "视频提示词" },
+  { href: "/design", label: "方案预览" },
+];
 
 export function SiteHeader() {
   const pathname = usePathname();
 
-  const isActive = (href: string) => {
-    if (href === "/") return pathname === "/";
-    return pathname === href || pathname.startsWith(`${href}/`);
-  };
-
   return (
-    <header className="sticky top-0 z-30 -mx-4 border-b border-white/[0.06] bg-ink-950/85 px-4 backdrop-blur-xl sm:-mx-6 sm:px-6">
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 py-3">
-        <Link href="/" className="flex shrink-0 items-center gap-2.5">
-          <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-accent to-accent-warm text-ink-950">
-            <svg viewBox="0 0 16 16" className="h-3.5 w-3.5 fill-current">
-              <path d="M4 2.2 13 8l-9 5.8z" />
+    <header className="sticky top-0 z-40 border-b border-hairline bg-canvas/72 backdrop-blur-xl backdrop-saturate-150">
+      <div className="mx-auto flex h-12 w-full max-w-[1120px] items-center gap-6 px-5">
+        <Link href="/" className="flex items-center gap-2" aria-label="PromptVault 首页">
+          <span className="grid h-6 w-6 place-items-center rounded-[7px] bg-ink text-canvas">
+            <svg viewBox="0 0 16 16" className="h-3 w-3 fill-current">
+              <path d="M4.5 2.5 12.5 8l-8 5.5z" />
             </svg>
           </span>
-          <span className="leading-tight">
-            <span className="block text-[14px] font-semibold tracking-tight text-white">
-              PromptVault
-            </span>
-            <span className="block font-mono text-[9.5px] uppercase tracking-[0.16em] text-mist-500">
-              AI 视频提示词库
-            </span>
-          </span>
+          <span className="text-[13px] font-semibold tracking-[-0.01em]">PromptVault</span>
         </Link>
 
-        <nav aria-label="分类导航" className="flex flex-1 flex-wrap items-center gap-1">
-          <NavLink href="/all" active={isActive("/all")}>
-            全部
-          </NavLink>
-          {CATEGORIES.map((c) => (
-            <NavLink
-              key={c.id}
-              href={`/c/${c.id}`}
-              active={isActive(`/c/${c.id}`)}
-              color={c.tint}
-              icon={c.icon}
-            >
-              {c.label}
-            </NavLink>
-          ))}
+        <nav aria-label="主导航" className="hidden flex-1 items-center justify-center gap-7 sm:flex">
+          {NAV.map((n) => {
+            const active =
+              n.href === "/" ? pathname === "/" : pathname === n.href || pathname.startsWith(`${n.href}/`);
+            return (
+              <Link
+                key={n.href}
+                href={n.href}
+                aria-current={active ? "page" : undefined}
+                className={`text-[12px] transition-colors ${
+                  active ? "text-ink" : "text-muted hover:text-ink"
+                }`}
+              >
+                {n.label}
+              </Link>
+            );
+          })}
         </nav>
-      </div>
-    </header>
-  );
-}
 
-function NavLink({
-  href,
-  active,
-  color,
-  icon,
-  children,
-}: {
-  href: string;
-  active: boolean;
-  color?: string;
-  icon?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <Link
-      href={href}
-      aria-current={active ? "page" : undefined}
-      className={`inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[12px] transition-colors ${
-        active
-          ? "bg-white/[0.09] font-semibold text-white"
-          : "text-mist-300 hover:bg-white/[0.05] hover:text-white"
-      }`}
-    >
-      {icon && (
-        <span className="text-[10px]" style={{ color: active ? color : color }}>
-          {icon}
-        </span>
-      )}
-      {children}
-    </Link>
+        <div className="ml-auto flex items-center gap-3 sm:ml-0">
+          <ThemeToggle />
+        </div>
+      </div>
+
+      {/* 移动端次级导航 */}
+      <nav
+        aria-label="主导航（移动端）"
+        className="flex items-center gap-5 overflow-x-auto border-t border-hairline px-5 py-2 sm:hidden"
+      >
+        {NAV.slice(1).map((n) => (
+          <Link
+            key={n.href}
+            href={n.href}
+            className="shrink-0 text-[12px] text-muted transition-colors hover:text-ink"
+          >
+            {n.label}
+          </Link>
+        ))}
+      </nav>
+    </header>
   );
 }

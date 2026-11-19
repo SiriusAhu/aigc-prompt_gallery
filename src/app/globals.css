@@ -1,64 +1,94 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: var(--font-inter), "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains), "Cascadia Code", ui-monospace, monospace;
-  --color-ink-950: #080b14;
-  --color-ink-900: #0c111d;
-  --color-ink-800: #121a2b;
-  --color-ink-700: #1b2438;
-  --color-ink-600: #2a3550;
-  --color-mist-100: #eef2fb;
-  --color-mist-300: #b9c4da;
-  --color-mist-500: #7f8dab;
-  --color-accent: #40e0d0;
-  --color-accent-warm: #ffb84c;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+    "Segoe UI", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --font-mono: "SF Mono", "JetBrains Mono", "Cascadia Code", ui-monospace, monospace;
+}
+
+/* 语义色：跟随 data-theme，默认浅色 */
+:root {
+  --canvas: #ffffff;
+  --surface: #f5f5f7;
+  --surface-raised: #ffffff;
+  --ink: #1d1d1f;
+  --muted: #6e6e73;
+  --hairline: rgba(0, 0, 0, 0.08);
+  --accent: #0071e3;
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(0, 113, 227, 0.1);
+  --tile-1: #eef1f6;
+  --tile-2: #f7f8fa;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+:root[data-theme="dark"] {
+  --canvas: #000000;
+  --surface: #161617;
+  --surface-raised: #1d1d1f;
+  --ink: #f5f5f7;
+  --muted: #86868b;
+  --hairline: rgba(255, 255, 255, 0.12);
+  --accent: #2997ff;
+  --accent-ink: #000000;
+  --accent-soft: rgba(41, 151, 255, 0.14);
+  --tile-1: #1c1c1e;
+  --tile-2: #131315;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 12px 32px rgba(0, 0, 0, 0.55);
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-raised: var(--surface-raised);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-hairline: var(--hairline);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
 }
 
 @layer base {
   :root {
+    color-scheme: light;
+  }
+  :root[data-theme="dark"] {
     color-scheme: dark;
   }
 
   html {
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
     margin: 0;
-    background-color: var(--color-ink-950);
-    color: var(--color-mist-100);
+    background-color: var(--canvas);
+    color: var(--ink);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
-    background-image:
-      radial-gradient(900px 500px at 12% -8%, rgba(64, 224, 208, 0.09), transparent 70%),
-      radial-gradient(700px 420px at 92% 0%, rgba(255, 184, 76, 0.06), transparent 68%);
-    background-attachment: fixed;
+    text-rendering: optimizeLegibility;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   ::selection {
-    background: rgba(64, 224, 208, 0.28);
+    background: var(--accent-soft);
   }
 
   *:focus-visible {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 2px;
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px;
   }
 
   ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
   }
-  ::-webkit-scrollbar-track {
-    background: var(--color-ink-950);
-  }
   ::-webkit-scrollbar-thumb {
-    background: var(--color-ink-600);
+    background: var(--hairline);
     border-radius: 999px;
-    border: 2px solid var(--color-ink-950);
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: #3a4a6b;
   }
 }
 
@@ -75,12 +105,18 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
+  /* 苹果式大标题：紧字距、负 tracking */
+  .display {
+    letter-spacing: -0.035em;
+    line-height: 1.05;
+    font-weight: 600;
+  }
 }
 
-@keyframes pv-fade-up {
+@keyframes pv-rise {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
@@ -88,8 +124,8 @@
   }
 }
 
-.pv-fade-up {
-  animation: pv-fade-up 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+.pv-rise {
+  animation: pv-rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @media (prefers-reduced-motion: reduce) {

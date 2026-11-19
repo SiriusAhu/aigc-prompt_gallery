@@ -1,5 +1,6 @@
 /**
- * 数据自检。id 重复、分类拼错、媒体路径指向不存在的文件，都会在 dev/build 前直接报错。
+ * 数据自检。id 重复、kind/category 写错、媒体路径不存在，都会在 dev/build 前报错。
+ * 内容允许为空（当前处于结构定稿阶段），空数组只提示、不失败。
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -12,16 +13,12 @@ const ASSETS_DIR = path.resolve(
   process.env.ASSETS_DIR ?? (process.env.CI ? "assets" : "../assets"),
 );
 
-const VALID_CATEGORIES = [
-  "camera",
-  "light",
-  "material",
-  "structure",
-  "style",
-  "negative",
-  "workflow",
-];
-const VALID_ASPECTS = ["16:9", "9:16", "1:1", "4:3", "21:9"];
+const VALID_KINDS = ["image", "video"];
+const CATEGORIES = {
+  image: ["portrait", "scene", "product", "illustration", "architecture", "style"],
+  video: ["camera", "light", "material", "structure", "style", "negative", "workflow"],
+};
+const VALID_ASPECTS = ["1:1", "4:3", "16:9", "9:16", "3:2", "21:9"];
 const MEDIA_EXT = /\.(mp4|webm|mov|png|jpe?g|webp|avif|gif)$/i;
 
 const errors = [];
@@ -42,8 +39,9 @@ async function load() {
     platform: "node",
     logLevel: "silent",
   });
-  const code = out.outputFiles[0].text;
-  const mod = await import(`data:text/javascript;base64,${Buffer.from(code).toString("base64")}`);
+  const mod = await import(
+    `data:text/javascript;base64,${Buffer.from(out.outputFiles[0].text).toString("base64")}`
+  );
   return mod.PROMPTS ?? [];
 }
 
@@ -60,7 +58,7 @@ function checkMedia(item, field, rel) {
     return;
   }
   if (!fs.existsSync(file)) {
-    warnings.push(`[${item.id}] ${field} 指向的文件不存在：${rel}（页面会退回分类色块）`);
+    warnings.push(`[${item.id}] ${field} 指向的文件不存在：${rel}（页面会显示占位）`);
   }
 }
 
@@ -80,14 +78,16 @@ async function main() {
     }
     if (ids.has(item.id)) errors.push(`${at} id 重复`);
     ids.add(item.id);
+
+    if (!VALID_KINDS.includes(item.kind)) {
+      errors.push(`${at} kind 必须是 image 或 video，当前：${item.kind}`);
+    } else if (!CATEGORIES[item.kind].includes(item.category)) {
+      errors.push(
+        `${at} category 非法：${item.category}（${item.kind} 可选 ${CATEGORIES[item.kind].join(" | ")}）`,
+      );
+    }
     if (!item.title) errors.push(`${at} title 不能为空`);
     if (!item.prompt) errors.push(`${at} prompt 不能为空`);
-    if (!VALID_CATEGORIES.includes(item.category)) {
-      errors.push(`${at} category 非法：${item.category}`);
-    }
-    if (!Array.isArray(item.models) || item.models.length === 0) {
-      errors.push(`${at} models 至少写一个`);
-    }
     if (item.params?.aspect && !VALID_ASPECTS.includes(item.params.aspect)) {
       errors.push(`${at} params.aspect 非法：${item.params.aspect}`);
     }
@@ -107,10 +107,13 @@ async function main() {
     console.error(`\n数据校验失败：${errors.length} 处错误`);
     process.exit(1);
   }
-  const withMedia = PROMPTS.filter((p) => p.media?.video).length;
+
+  const img = PROMPTS.filter((p) => p.kind === "image").length;
+  const vid = PROMPTS.filter((p) => p.kind === "video").length;
   console.log(
-    `  ✓ 数据校验通过：${PROMPTS.length} 条模板` +
-      (withMedia ? `，其中 ${withMedia} 条带视频` : "（暂无可预览视频，卡片走文字版式）"),
+    PROMPTS.length === 0
+      ? "  ✓ 数据校验通过：提示词库为空（结构定稿阶段，符合预期）"
+      : `  ✓ 数据校验通过：共 ${PROMPTS.length} 条（图片 ${img} / 视频 ${vid}）`,
   );
 }
 

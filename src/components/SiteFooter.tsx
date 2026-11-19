@@ -1,44 +1,24 @@
 import Link from "next/link";
-import { CATEGORIES } from "@/data/categories";
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-white/[0.06] py-6">
-      <div className="flex flex-wrap items-start justify-between gap-6">
+    <footer className="mt-24 border-t border-hairline bg-surface">
+      <div className="mx-auto flex w-full max-w-[1120px] flex-col gap-6 px-5 py-10 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
-          <p className="text-[12px] font-medium text-mist-300">PromptVault</p>
-          <p className="text-[11px] text-mist-500">
-            AI 视频提示词库 · 纯静态部署 · 内容与素材分离管理
-          </p>
+          <p className="text-[12px] font-medium text-ink">PromptVault</p>
+          <p className="text-[11px] text-muted">个人 AIGC 提示词库 · 静态部署</p>
         </div>
-
-        <div className="flex flex-wrap gap-x-6 gap-y-2">
-          <div className="space-y-1.5">
-            <p className="text-[10px] uppercase tracking-[0.18em] text-mist-500">分类</p>
-            <div className="flex flex-wrap gap-x-3 gap-y-1">
-              {CATEGORIES.map((c) => (
-                <Link
-                  key={c.id}
-                  href={`/c/${c.id}`}
-                  className="text-[11px] text-mist-300 transition-colors hover:text-accent"
-                >
-                  {c.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-          <div className="space-y-1.5">
-            <p className="text-[10px] uppercase tracking-[0.18em] text-mist-500">入口</p>
-            <div className="flex flex-col gap-1">
-              <Link href="/" className="text-[11px] text-mist-300 hover:text-accent">
-                首页
-              </Link>
-              <Link href="/all" className="text-[11px] text-mist-300 hover:text-accent">
-                全部模板
-              </Link>
-            </div>
-          </div>
-        </div>
+        <nav aria-label="页脚导航" className="flex flex-wrap gap-x-6 gap-y-2">
+          {[
+            { href: "/image", label: "图片提示词" },
+            { href: "/video", label: "视频提示词" },
+            { href: "/design", label: "方案预览" },
+          ].map((l) => (
+            <Link key={l.href} href={l.href} className="text-[11px] text-muted hover:text-ink">
+              {l.label}
+            </Link>
+          ))}
+        </nav>
       </div>
     </footer>
   );

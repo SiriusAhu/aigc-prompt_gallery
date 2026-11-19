@@ -1,96 +1,128 @@
 import Link from "next/link";
-import { CATEGORIES } from "@/data/categories";
+import { KIND_META } from "@/data/categories";
 import { PROMPTS } from "@/data/prompts";
-import { PromptCard } from "@/components/PromptCard";
+import type { PromptKind } from "@/data/types";
 
-const FEATURED = PROMPTS.filter((p) => p.category === "camera" || p.category === "light").slice(0, 4);
-const withVideo = PROMPTS.filter((p) => p.media?.video).length;
+const KINDS: PromptKind[] = ["image", "video"];
+
+const TILE_GRADIENTS: Record<PromptKind, string[]> = {
+  image: [
+    "linear-gradient(135deg,#ffe8d6,#ffd3b6)",
+    "linear-gradient(135deg,#d9f2e4,#bfe8d2)",
+    "linear-gradient(135deg,#dfe7ff,#c8d6ff)",
+  ],
+  video: [
+    "linear-gradient(135deg,#e6dcff,#d3c6ff)",
+    "linear-gradient(135deg,#ffe3ef,#ffc9dd)",
+    "linear-gradient(135deg,#fff3cf,#ffe6a8)",
+  ],
+};
+
+function KindTile({ kind }: { kind: PromptKind }) {
+  const meta = KIND_META[kind];
+  const count = PROMPTS.filter((p) => p.kind === kind).length;
+
+  return (
+    <Link
+      href={meta.href}
+      className="group relative flex flex-col justify-between overflow-hidden rounded-[32px] border border-hairline bg-surface p-7 transition-all duration-500 hover:-translate-y-1 sm:p-9"
+      style={{ minHeight: "clamp(320px, 42vh, 460px)" }}
+    >
+      <div
+        className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full opacity-60 blur-3xl transition-opacity duration-500 group-hover:opacity-90"
+        style={{
+          background: kind === "image" ? "rgba(255,180,140,0.35)" : "rgba(160,140,255,0.35)",
+        }}
+      />
+
+      <div className="relative flex items-start justify-between gap-4">
+        <div>
+          <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted">
+            {kind === "image" ? "Image" : "Video"}
+          </p>
+          <h2 className="mt-2 text-[30px] font-semibold tracking-[-0.03em] sm:text-[36px]">
+            {meta.label}
+          </h2>
+          <p className="mt-2 max-w-[24ch] text-[13px] leading-relaxed text-muted">{meta.blurb}</p>
+        </div>
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-hairline bg-canvas text-ink transition-transform duration-300 group-hover:translate-x-0.5">
+          <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.6">
+            <path d="M3 8h10M9 4l4 4-4 4" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </span>
+      </div>
+
+      {/* 预览条：三条占位，正式内容接入后替换为真实缩略图 */}
+      <div className="relative mt-8 flex items-end gap-2.5">
+        {TILE_GRADIENTS[kind].map((g, i) => (
+          <div
+            key={i}
+            className="flex-1 overflow-hidden rounded-[14px] border border-white/30 transition-transform duration-500 group-hover:-translate-y-1"
+            style={{
+              background: g,
+              aspectRatio: i === 0 ? "4 / 3" : "4 / 3",
+              transform: `translateY(${i === 1 ? -10 : 0}px)`,
+              transitionDelay: `${i * 40}ms`,
+              opacity: 0.9,
+            }}
+          >
+            <div className="h-full w-full bg-gradient-to-t from-black/[0.06] to-transparent" />
+          </div>
+        ))}
+      </div>
+
+      <div className="relative mt-5 flex items-center gap-2 text-[12px] text-muted">
+        <span className="rounded-full bg-canvas px-2.5 py-1 font-medium text-ink">
+          {count} 条模板
+        </span>
+        <span>进入 {meta.label} →</span>
+      </div>
+    </Link>
+  );
+}
 
 export default function HomePage() {
   return (
-    <div className="space-y-14">
-      <section className="max-w-3xl space-y-4 pt-8">
-        <p className="font-mono text-[10.5px] uppercase tracking-[0.24em] text-accent">
-          AI 视频提示词库
+    <div className="mx-auto w-full max-w-[1120px] px-5">
+      <section className="pb-14 pt-20 sm:pb-20 sm:pt-28">
+        <p className="pv-rise text-[12px] font-medium uppercase tracking-[0.2em] text-muted">
+          Personal AIGC Library
         </p>
-        <h1 className="text-3xl font-semibold leading-tight tracking-tight text-white sm:text-[42px]">
-          把有效的运镜、光位和参数
-          <span className="bg-gradient-to-r from-accent to-accent-warm bg-clip-text text-transparent">
-            {" "}
-            沉淀成可复用的模板
-          </span>
+        <h1 className="display pv-rise mt-4 max-w-[18ch] text-[44px] sm:text-[64px]" style={{ animationDelay: "60ms" }}>
+          把好用的提示词
+          <br />
+          收进一个地方
         </h1>
-        <p className="max-w-2xl text-[13.5px] leading-relaxed text-mist-300">
-          每条模板都带正负向提示词、画幅时长帧率参数和实测备注。按分类浏览，悬停卡片看效果，点开任意一条复制使用。
+        <p className="pv-rise mt-6 max-w-[46ch] text-[15px] leading-[1.6] text-muted sm:text-[17px]" style={{ animationDelay: "120ms" }}>
+          图片与视频分开管理，每条都能一键复制。
+          <br className="hidden sm:block" />
+          先选一个方向开始。
         </p>
-        <div className="flex flex-wrap gap-2 pt-1">
-          <Link
-            href="/all"
-            className="rounded-xl bg-accent px-4 py-2 text-[13px] font-semibold text-ink-950 transition-transform hover:scale-[1.02]"
-          >
-            浏览全部 {PROMPTS.length} 条
-          </Link>
-          <Link
-            href="/c/camera"
-            className="rounded-xl border border-white/12 px-4 py-2 text-[13px] text-mist-300 transition-colors hover:border-accent/40 hover:text-accent"
-          >
-            从运镜开始
-          </Link>
-        </div>
       </section>
 
-      <section aria-labelledby="categories-heading" className="space-y-4">
-        <div className="flex items-baseline justify-between gap-4">
-          <h2 id="categories-heading" className="text-[17px] font-semibold tracking-tight text-white">
-            按分类浏览
-          </h2>
-          <Link href="/all" className="text-[11.5px] text-mist-500 hover:text-accent">
-            全部模板 →
-          </Link>
-        </div>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {CATEGORIES.map((c) => {
-            const count = PROMPTS.filter((p) => p.category === c.id).length;
-            return (
-              <Link
-                key={c.id}
-                href={`/c/${c.id}`}
-                className="group relative overflow-hidden rounded-2xl border border-white/[0.07] bg-ink-900/60 p-4
-                           transition-all duration-300 hover:-translate-y-0.5 hover:border-white/15 hover:bg-ink-900"
-              >
-                <div
-                  className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full opacity-[0.12] blur-2xl transition-opacity group-hover:opacity-25"
-                  style={{ background: c.tint }}
-                />
-                <div className="flex items-start justify-between gap-3">
-                  <span className="text-lg" style={{ color: c.tint }}>
-                    {c.icon}
-                  </span>
-                  <span className="font-mono text-[10.5px] text-mist-500">{count} 条</span>
-                </div>
-                <p className="mt-3 text-[14px] font-semibold text-mist-100 group-hover:text-white">
-                  {c.label}
-                </p>
-                <p className="mt-0.5 text-[11.5px] leading-relaxed text-mist-500">{c.description}</p>
-              </Link>
-            );
-          })}
-        </div>
+      <section aria-label="内容入口" className="grid gap-5 pb-8 sm:grid-cols-2 sm:gap-6">
+        {KINDS.map((k) => (
+          <KindTile key={k} kind={k} />
+        ))}
       </section>
 
-      <section aria-labelledby="featured-heading" className="space-y-4">
-        <div className="flex items-baseline justify-between gap-4">
-          <h2 id="featured-heading" className="text-[17px] font-semibold tracking-tight text-white">
-            精选模板
-          </h2>
-          <span className="font-mono text-[10.5px] text-mist-500">
-            {withVideo > 0 ? `${withVideo} 条带视频` : `${PROMPTS.length} 条模板`}
-          </span>
-        </div>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {FEATURED.map((item, i) => (
-            <PromptCard key={item.id} item={item} index={i} />
-          ))}
+      <section className="mt-16 rounded-[28px] border border-hairline bg-surface px-7 py-8 sm:px-9">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-[15px] font-semibold tracking-[-0.01em]">还在选视觉方案？</h2>
+            <p className="mt-1 text-[12.5px] text-muted">
+              条目呈现方式有三个候选，都做成了可对比的预览。
+            </p>
+          </div>
+          <Link
+            href="/design"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-[12.5px] font-medium text-accent-ink transition-opacity hover:opacity-90"
+          >
+            查看方案预览
+            <svg viewBox="0 0 16 16" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <path d="M6 3l5 5-5 5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </Link>
         </div>
       </section>
     </div>

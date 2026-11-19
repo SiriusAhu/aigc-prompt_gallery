@@ -1,15 +1,17 @@
 {
   "name": "prompt-vault",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "scripts": {
     "dev": "node scripts/sync-media.mjs && next dev",
     "build": "node scripts/validate-prompts.mjs && node scripts/sync-media.mjs && next build && node scripts/postbuild.mjs",
-    "start": "npx serve out",
+    "start": "node scripts/serve-out.mjs 5190",
     "validate": "node scripts/validate-prompts.mjs",
     "sync:media": "node scripts/sync-media.mjs",
-    "lint": "oxlint"
+    "lint": "oxlint",
+    "lint:commit": "commitlint --edit",
+    "prepare": "husky"
   },
   "dependencies": {
     "next": "^16.4.6",
@@ -17,11 +19,14 @@
     "react-dom": "^19.3.1"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
     "@tailwindcss/postcss": "^4.3.5",
     "@types/node": "^24.19.2",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "esbuild": "^0.28.2",
+    "husky": "^9.1.7",
     "oxlint": "^1.90.0",
     "tailwindcss": "^4.3.5",
     "typescript": "~7.0.2"
