@@ -30,7 +30,7 @@ export default async function PromptDetailPage({ params }: { params: Promise<Par
   if (!item) notFound();
 
   const kindMeta = KIND_META[item.kind];
-  const cover = assetUrl(item.media?.cover);
+  const images = (item.media?.images ?? []).map((src) => assetUrl(src)).filter(Boolean) as string[];
   const video = assetUrl(item.media?.video);
 
   return (
@@ -57,13 +57,10 @@ export default async function PromptDetailPage({ params }: { params: Promise<Par
           {item.added && <span className="font-mono text-muted/70">{item.added}</span>}
         </div>
         <h1 className="display text-[30px] sm:text-[40px]">{item.title}</h1>
-        {item.models && item.models.length > 0 && (
-          <p className="font-mono text-[11.5px] text-muted">{item.models.join(" · ")}</p>
-        )}
       </header>
 
-      <div className="mt-8 overflow-hidden rounded-[28px] border border-hairline bg-surface">
-        {video ? (
+      {video ? (
+        <div className="mt-8 overflow-hidden rounded-[28px] border border-hairline bg-surface">
           <video
             src={video}
             controls
@@ -71,18 +68,30 @@ export default async function PromptDetailPage({ params }: { params: Promise<Par
             loop
             playsInline
             preload="metadata"
-            poster={cover}
+            poster={images[0]}
             className="aspect-video w-full object-contain"
           />
-        ) : cover ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={cover} alt={item.title} className="w-full object-contain" />
-        ) : (
-          <div className="grid aspect-video w-full place-items-center">
-            <span className="text-[11px] uppercase tracking-[0.25em] text-muted/60">预览占位</span>
-          </div>
-        )}
-      </div>
+        </div>
+      ) : images.length > 0 ? (
+        <div
+          className={`mt-8 grid gap-3 ${images.length > 1 ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1"}`}
+        >
+          {images.map((src, i) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={src}
+              src={src}
+              alt={`${item.title} 第 ${i + 1} 张`}
+              loading={i === 0 ? "eager" : "lazy"}
+              className="w-full rounded-[20px] border border-hairline bg-surface object-cover"
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="mt-8 grid aspect-video w-full place-items-center rounded-[28px] border border-hairline bg-surface">
+          <span className="text-[11px] uppercase tracking-[0.25em] text-muted/60">预览占位</span>
+        </div>
+      )}
 
       <section className="mt-8 space-y-2">
         <div className="flex items-center justify-between gap-3">
@@ -145,6 +154,16 @@ export default async function PromptDetailPage({ params }: { params: Promise<Par
       <div className="mt-10">
         <CopyButton text={item.prompt} label="复制提示词" variant="solid" />
       </div>
+
+      {/* 署名：模型放在最底部 */}
+      {item.models && item.models.length > 0 && (
+        <footer className="mt-10 border-t border-hairline pt-4">
+          <p className="text-[11px] text-muted">
+            生成模型
+            <span className="ml-2 font-mono text-ink">{item.models.join(" · ")}</span>
+          </p>
+        </footer>
+      )}
     </article>
   );
 }

@@ -21,10 +21,11 @@ Next.js 静态导出，零后端，计划部署到 GitHub Pages。
 
 - 每条内容是一个 `border` + 极轻阴影的圆角卡片
 - 预览框统一比例，`object-cover` 裁切，保证网格对齐
+- **同一条提示词的多张结果只占一个卡片位**：缩略图带左右按钮循环切换，底部小圆点 + `1/3` 计数
 - 提示词固定两行截断，完整内容进详情页
-- 底部一行：标签（最多 3 个）+ 复制按钮
+- 底部依次是：标签、复制按钮、生成模型
 
-实现见 `src/components/PromptCard.tsx`。
+实现见 `src/components/PromptCard.tsx` 与 `src/components/ImageCarousel.tsx`。
 
 ## 标签与排序
 
@@ -89,17 +90,24 @@ pnpm validate     # 只跑数据校验
 
 ```ts
 {
-  id: "example-video-orbit",   // 唯一，同时是 /p/<id>
-  kind: "video",               // image | video
-  title: "【示例】环绕推镜",
-  tags: ["运镜", "产品"],       // 分类即标签，第一个显示为卡片角标
-  models: ["Kling 2.1"],
-  prompt: "...",
+  id: "film-course-boy-tv",    // 唯一，同时是 /p/<id>
+  kind: "image",               // image | video
+  title: "【示例】深夜看电视的男孩",
+  tags: ["影视飓风"],           // 分类即标签，第一个显示为卡片角标
+  models: ["gpt-image-2.5-sunburst"],  // 详情页底部署名
+  prompt: "时间：…\n\n主体：…\n\n场景：…\n\n风格：…",
   negative: "...",
-  params: { aspect: "16:9", duration: 5, fps: 30 },
+  params: { aspect: "1:1" },
   notes: "实测备注",
-  added: "2026-11-19",         // 用于按时间排序
-  media: { cover: "covers/x.png", video: "videos/x.mp4" },
+  added: "2026-11-19",
+  media: {
+    images: [                  // 同一提示词的多张结果，卡片上轮播
+      "images/boy-watching-tv/01.png",
+      "images/boy-watching-tv/02.png",
+      "images/boy-watching-tv/03.png",
+    ],
+    video: "videos/x.mp4",     // 可选，有值才启用悬停播放
+  },
 }
 ```
 

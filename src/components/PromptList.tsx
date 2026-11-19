@@ -3,6 +3,7 @@
 import { useCallback, useMemo } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { PromptItem } from "@/data/types";
+import { assetUrl } from "@/lib/asset";
 import { PromptCard } from "./PromptCard";
 
 type SortKey = "default" | "title" | "newest" | "oldest";
@@ -146,8 +147,11 @@ export function PromptList({
                 title: p.title,
                 prompt: p.prompt,
                 tags: p.tags,
-                cover: p.media?.cover,
+                images: p.media?.images?.map((src) => assetUrl(src)).filter(Boolean) as
+                  | string[]
+                  | undefined,
                 hasVideo: Boolean(p.media?.video),
+                model: p.models?.[0],
               }}
             />
           ))}

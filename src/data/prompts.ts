@@ -9,9 +9,35 @@ import type { PromptItem } from "./types";
  * - kind 决定出现在 /image 还是 /video
  * - tags 就是分类，自由填写，第一个会显示在卡片角标
  * - added 用于按时间排序，格式 YYYY-MM-DD
- * - media 可选，路径相对于素材库根目录：{ cover: "covers/x.png", video: "videos/x.mp4" }
+ * - media.images 放同一条提示词的多张结果，卡片上用一个轮播位展示
+ *   路径相对于素材库根目录：{ images: ["images/xxx/01.png"] }
+ * - media.video 有值才启用悬停播放
  */
 export const PROMPTS: PromptItem[] = [
+  {
+    id: "film-course-boy-tv",
+    kind: "image",
+    title: "【示例】深夜看电视的男孩",
+    tags: ["影视飓风"],
+    models: ["gpt-image-2.5-sunburst"],
+    prompt:
+      "时间：夜晚，屋里的光几乎全部来自电视屏幕。\n\n" +
+      "主体：一个七八岁的男孩盘腿坐在沙发上，背对镜头，抬头看着电视。\n\n" +
+      "场景：小户型公寓的客厅，一张旧布艺沙发，茶几上放着半杯牛奶和遥控器。\n\n" +
+      "风格：iPhone 随手拍的生活照质感。",
+    params: { aspect: "1:1" },
+    added: "2026-11-19",
+    notes:
+      "四轴基线初版。时间轴不写「晚上」两个字，而是把光源交给电视；风格轴不堆形容词，只落在一句「iPhone 随手拍」。后续消融实验逐段删减对比。",
+    media: {
+      images: [
+        "images/boy-watching-tv/01.png",
+        "images/boy-watching-tv/02.png",
+        "images/boy-watching-tv/03.png",
+      ],
+    },
+  },
+
   // ── 图片 ──────────────────────────────────────────────
   {
     id: "example-image-cabin",

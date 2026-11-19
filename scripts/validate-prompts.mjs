@@ -87,7 +87,12 @@ async function main() {
     if (item.added && !/^\d{4}-\d{2}-\d{2}$/.test(item.added)) {
       errors.push(`${at} added 必须是 YYYY-MM-DD`);
     }
-    checkMedia(item, "media.cover", item.media?.cover);
+    if (Array.isArray(item.media?.images)) {
+      if (item.media.images.length === 0) {
+        errors.push(`${at} media.images 不能是空数组`);
+      }
+      item.media.images.forEach((rel, i) => checkMedia(item, `media.images[${i}]`, rel));
+    }
     checkMedia(item, "media.video", item.media?.video);
   }
 

@@ -12,10 +12,13 @@ export interface PromptParams {
 }
 
 export interface MediaRef {
+  /**
+   * 同一条提示词的多个生成结果，按顺序展示。
+   * 卡片上只占一个位置，用左右按钮循环切换。
+   */
+  images?: string[];
   /** 视频文件；有它才会启用「悬停播放」 */
   video?: string;
-  /** 预览图；同时也是视频的封面 */
-  cover?: string;
 }
 
 export interface PromptItem {
@@ -26,7 +29,7 @@ export interface PromptItem {
   title: string;
   /** 分类即标签，自由填写；第一个同时作为卡片角标 */
   tags: string[];
-  /** 适用模型 */
+  /** 生成所用的模型，展示时署名在底部 */
   models?: string[];
   /** 正向提示词正文 */
   prompt: string;
