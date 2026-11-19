@@ -31,6 +31,12 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      - name: Audit dependencies
+        # 高危或严重级别的已知漏洞直接阻断构建。
+        # 注意：审计结果依赖 npm/GitHub advisory 数据库的可用性，
+        # 若遇到误报或数据库抖动，可用 continue-on-error 降级为提示。
+        run: pnpm audit --audit-level high
+
       - name: Build static export
         # BASE 必须是 /<仓库名>/，否则 Pages 子路径下所有资源 404。
         # ASSETS_DIR=assets 让素材同步读仓内副本（CI 里没有仓库上一级）。
