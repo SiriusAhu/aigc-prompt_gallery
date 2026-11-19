@@ -1,7 +1,7 @@
 import { KIND_META } from "@/data/categories";
 import type { PromptKind } from "@/data/types";
 import { byKind } from "@/lib/prompts";
-import { PromptItemView } from "./PromptItemView";
+import { PromptCard } from "./PromptCard";
 
 function EmptyState({ kind }: { kind: PromptKind }) {
   return (
@@ -22,8 +22,7 @@ function EmptyState({ kind }: { kind: PromptKind }) {
       </div>
       <h2 className="mt-5 text-[15px] font-semibold tracking-[-0.01em]">还没有收录</h2>
       <p className="mx-auto mt-2 max-w-[42ch] text-[12.5px] leading-relaxed text-muted">
-        这个页面暂时是空的。等视觉方案定稿后再往里填内容，
-        目前只保留了页面骨架和版式。
+        这个页面暂时是空的。版式已经定稿，等待内容填充。
       </p>
       <p className="mt-4 font-mono text-[11px] text-muted/70">
         src/data/prompts.ts · kind: &quot;{kind}&quot;
@@ -51,16 +50,14 @@ export function PromptPage({ kind }: { kind: PromptKind }) {
         </div>
         <p className="mt-4 max-w-[52ch] text-[14px] leading-relaxed text-muted sm:text-[15px]">
           {meta.blurb}
-          {kind === "video" && " 视频条目支持鼠标悬停播放。"}
         </p>
       </header>
 
       {items.length > 0 ? (
-        <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((p) => (
-            <PromptItemView
+            <PromptCard
               key={p.id}
-              variant="tile"
               ratio={ratio}
               href={`/p/${p.id}`}
               item={{

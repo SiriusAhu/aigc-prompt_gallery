@@ -12,7 +12,6 @@ export function SiteFooter() {
           {[
             { href: "/image", label: "图片提示词" },
             { href: "/video", label: "视频提示词" },
-            { href: "/design", label: "方案预览" },
           ].map((l) => (
             <Link key={l.href} href={l.href} className="text-[11px] text-muted hover:text-ink">
               {l.label}

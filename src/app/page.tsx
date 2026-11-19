@@ -105,26 +105,6 @@ export default function HomePage() {
           <KindTile key={k} kind={k} />
         ))}
       </section>
-
-      <section className="mt-16 rounded-[28px] border border-hairline bg-surface px-7 py-8 sm:px-9">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="text-[15px] font-semibold tracking-[-0.01em]">还在选视觉方案？</h2>
-            <p className="mt-1 text-[12.5px] text-muted">
-              条目呈现方式有三个候选，都做成了可对比的预览。
-            </p>
-          </div>
-          <Link
-            href="/design"
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-[12.5px] font-medium text-accent-ink transition-opacity hover:opacity-90"
-          >
-            查看方案预览
-            <svg viewBox="0 0 16 16" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="1.8">
-              <path d="M6 3l5 5-5 5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </Link>
-        </div>
-      </section>
     </div>
   );
 }

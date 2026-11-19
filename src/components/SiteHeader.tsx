@@ -8,7 +8,6 @@ const NAV = [
   { href: "/", label: "首页" },
   { href: "/image", label: "图片提示词" },
   { href: "/video", label: "视频提示词" },
-  { href: "/design", label: "方案预览" },
 ];
 
 export function SiteHeader() {

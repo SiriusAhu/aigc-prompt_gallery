@@ -4,7 +4,7 @@
 
 Next.js 静态导出，零后端，计划部署到 GitHub Pages。
 
-> **当前阶段：结构定稿中。** 三个主界面和主题系统已经完成，提示词内容是空的，条目呈现方式还在从 `/design` 方案预览页里选。
+> **当前阶段：版式已定稿，等待内容填充。** 三个界面与主题系统完成，提示词库暂时为空。
 
 ## 界面
 
@@ -13,9 +13,19 @@ Next.js 静态导出，零后端，计划部署到 GitHub Pages。
 | `/` | 首页：两个大入口（图片 / 视频），带预览占位 |
 | `/image` | 图片提示词 |
 | `/video` | 视频提示词 |
-| `/design` | **方案预览**：三种条目布局 + 首页布局 + 明暗色板，用于定稿 |
 
 `/image` 与 `/video` **共用同一个 `PromptPage` 组件**，差异只有两处：预览框比例（4:3 vs 16:9）和视频条目的悬停播放能力。
+
+## 条目版式：传统卡片
+
+在三种候选（无卡片媒体块 / 传统卡片 / 编辑式列表）中选定了**传统卡片**：
+
+- 每条内容是一个 `border` + 极轻阴影的圆角卡片
+- 预览框统一比例，`object-cover` 裁切，保证网格对齐
+- 提示词固定两行截断，完整内容进详情页
+- 底部一行：分类标签 + 复制按钮
+
+实现见 `src/components/PromptCard.tsx`。
 
 > 详情页 `/p/<id>` 暂未挂载。静态导出要求 `generateStaticParams` 至少产出一条路由，内容为空时会导致构建失败，等有内容后再启用。
 
@@ -43,7 +53,7 @@ pnpm validate     # 只跑数据校验
 
 ## 主题系统
 
-`src/app/globals.css` 里定义了一组语义色变量（`--canvas` / `--surface` / `--ink` / `--muted` / `--hairline` / `--accent`），浅色挂在 `:root`，深色挂在 `[data-theme="dark"]`。
+`src/app/globals.css` 定义了一组语义色变量（`--canvas` / `--surface` / `--ink` / `--muted` / `--hairline` / `--accent`），浅色挂在 `:root`，深色挂在 `[data-theme="dark"]`。
 
 组件只写 `bg-canvas`、`text-ink`、`border-hairline` 这类语义类名，**不需要为明暗各写一套样式**。
 
@@ -120,11 +130,10 @@ src/
 │  ├─ globals.css       语义色 token + 基础样式
 │  ├─ page.tsx          首页
 │  ├─ image/page.tsx    图片提示词
-│  ├─ video/page.tsx    视频提示词
-│  └─ design/page.tsx   方案预览
+│  └─ video/page.tsx    视频提示词
 ├─ components/
 │  ├─ PromptPage.tsx    两个提示词页共用的模板
-│  ├─ PromptItemView.tsx 条目三种呈现（tile / card / list）
+│  ├─ PromptCard.tsx    条目卡片
 │  ├─ CopyButton.tsx    复制按钮
 │  ├─ SiteHeader.tsx    毛玻璃导航
 │  ├─ SiteFooter.tsx
@@ -143,17 +152,13 @@ scripts/
 └─ serve-out.mjs        本地预览 out/
 ```
 
-## 找回早期模板
+## 找回早期的东西
 
-仓库里曾经收录 12 条视频提示词模板（运镜/光影/材质等），在重构时清空。需要取回：
-
-```bash
-git show 9d6dc2b:src/data/prompts.ts
-```
+- 早期 12 条视频提示词模板：`git show 9d6dc2b:src/data/prompts.ts`
+- 方案预览页（三种布局对比）：`git show 0e182d0:src/app/design/page.tsx`
 
 ## 已知边界
 
-- 提示词库为空，所有列表与详情能力只有骨架，没有内容可验证
-- `/design` 里的预览图是占位色块，不是真实素材
-- 没有搜索、筛选、排序——等内容定型后再加
+- 提示词库为空，列表与详情能力只有骨架
+- 没有搜索、分类筛选、排序——等内容定型后再加
 - 静态导出，没有服务端搜索或收藏同步
