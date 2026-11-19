@@ -55,8 +55,28 @@ function main() {
     copied++;
   }
 
+  // 清理不再被引用的陈旧文件（public/media 是生成目录，可以安全删除）
+  let removed = 0;
+  const referenced = new Set(refs.map((r) => path.normalize(r)));
+  const walk = (dir) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        walk(full);
+        if (fs.readdirSync(full).length === 0) fs.rmdirSync(full);
+      } else {
+        const rel = path.relative(PUBLIC_MEDIA, full);
+        if (!referenced.has(path.normalize(rel))) {
+          fs.unlinkSync(full);
+          removed++;
+        }
+      }
+    }
+  };
+  if (fs.existsSync(PUBLIC_MEDIA)) walk(PUBLIC_MEDIA);
+
   console.log(
-    `  → 媒体同步：${ASSETS_DIR} → public/media/，复制 ${copied} 个，缺失 ${missing} 个`,
+    `  → 媒体同步：${ASSETS_DIR} → public/media/，复制 ${copied} 个，清理 ${removed} 个，缺失 ${missing} 个`,
   );
 }
 

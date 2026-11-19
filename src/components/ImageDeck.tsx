@@ -52,7 +52,7 @@ export function ImageDeck({ images, alt, ratio = "4/3" }: Props) {
           src={img.src}
           alt={i === index ? alt : ""}
           aria-hidden={i !== index}
-          loading={i === 0 ? "eager" : "lazy"}
+          loading="eager"
           decoding="async"
           className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${
             i === index ? "opacity-100" : "opacity-0"

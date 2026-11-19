@@ -31,9 +31,9 @@ export const PROMPTS: PromptItem[] = [
       "四轴基线初版。时间轴不写「晚上」两个字，而是把光源交给电视；风格轴不堆形容词，只落在一句「iPhone 随手拍」。后续消融实验逐段删减对比。",
     media: {
       images: [
-        { src: "images/boy-watching-tv/01.png", seed: null },
-        { src: "images/boy-watching-tv/02.png", seed: null },
-        { src: "images/boy-watching-tv/03.png", seed: null },
+        { src: "images/boy-watching-tv/01.webp", seed: null },
+        { src: "images/boy-watching-tv/02.webp", seed: null },
+        { src: "images/boy-watching-tv/03.webp", seed: null },
       ],
     },
   },
